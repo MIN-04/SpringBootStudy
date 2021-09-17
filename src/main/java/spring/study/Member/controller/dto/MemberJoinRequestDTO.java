@@ -5,6 +5,7 @@ import lombok.Getter;
 import spring.study.Member.controller.validations.EmailValidation;
 import spring.study.Member.controller.validations.MobileNumValidation;
 import spring.study.Member.controller.validations.NameValidation;
+import spring.study.Member.controller.validations.PasswordValidation;
 
 import javax.validation.constraints.NotBlank;
 
@@ -15,6 +16,7 @@ public class MemberJoinRequestDTO {
 
     @NotBlank @EmailValidation
     private final String email; //이메일 (회원 ID)
+    @PasswordValidation(min = 8, max = 16)
     private final String password; //패스워드
     @NameValidation
     private final String name; //이름

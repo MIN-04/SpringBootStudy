@@ -19,9 +19,21 @@ public @interface PasswordValidation {
     String message() default "비밀번호 유효성 검사";
     Class[] groups() default {};
     Class[] payload() default {};
-    int min()
+    int min() default 0;
+    int max() default 256;
 
     class PasswordCustomValidation implements ConstraintValidator<PasswordValidation, String> {
+
+        private int min;        // 비밀번호 최소 문자
+        private int max;        // 비밀번호 최대 문자
+
+        @Override
+        public void initialize(PasswordValidation constraintAnnotation) {
+            // 어노테이션 등록 시 parameter 초기화
+            min = constraintAnnotation.min();
+            max = constraintAnnotation.max();
+        }
+
 
         @Override
         public boolean isValid(String password, ConstraintValidatorContext context) {
@@ -31,8 +43,13 @@ public @interface PasswordValidation {
                 return false;
             }
 
-            addMsg(context, PASSWORD_NOT_MATCH.getValidationMsg());
-            return Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$");
+            String regex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{"+min+","+max+"}$";
+            if (!Pattern.matches(regex, password)){
+                addMsg(context, PASSWORD_NOT_MATCH.getValidationMsg());
+                return false;
+            }
+
+            return true;
         }
 
         // context 메시지 추가
