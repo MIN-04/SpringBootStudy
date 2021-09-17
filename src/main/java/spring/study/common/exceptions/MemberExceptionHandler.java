@@ -2,6 +2,7 @@ package spring.study.common.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,12 @@ import static spring.study.common.enums.ErrorCode.FAIL_VALIDATE;
 public class MemberExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ResponseMessage setResponseMessage(ErrorCode errorCode, String detailMsg) {
-        return new ResponseMessage(errorCode.getHttpStatus(), errorCode.getErrorMsg(), detailMsg);
+//        return new ResponseMessage(errorCode.getHttpStatus(), errorCode.getErrorMsg(), detailMsg);
+        return ResponseMessage.builder()
+                .httpStatus(errorCode.getHttpStatus())
+                .message(errorCode.getErrorMsg())
+                .detailMsg(detailMsg)
+                .build();
     }
 
     /**

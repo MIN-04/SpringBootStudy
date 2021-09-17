@@ -1,19 +1,16 @@
 package spring.study.common.responses;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@AllArgsConstructor
 @RequiredArgsConstructor
+@Builder
 public class ResponseMessage {
     private final HttpStatus httpStatus;
     private final String message;
     private final String detailMsg;
-    private Object resultData;
+    private final Object resultData;
 
 //    public ResponseMessage(HttpStatus status, String message) {
 //        this.httpStatus = status;

@@ -39,7 +39,12 @@ public class MemberController {
      * 응답 메시지 만드는 메서드
      */
     private ResponseMessage setResponseMessage(SuccessCode sc, Object result) {
-        return new ResponseMessage(sc.getHttpStatus(), sc.getSuccessMsg(), null, result);
+//        return new ResponseMessage(sc.getHttpStatus(), sc.getSuccessMsg(), null, result);
+        return ResponseMessage.builder()
+                .httpStatus(sc.getHttpStatus())
+                .message(sc.getSuccessMsg())
+                .resultData(result)
+                .build();
     }
 
     /**
