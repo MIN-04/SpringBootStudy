@@ -63,7 +63,7 @@ public class MemberExceptionHandler extends ResponseEntityExceptionHandler {
      * @return
      */
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<String> handleDuplicatedUserException(CustomException e) {
+    public ResponseEntity<Object> handleDuplicatedUserException(CustomException e) {
         ErrorCode errorCode = e.getErrorCode();
 
         log.error("MemberExceptionHandler throw DuplicatedUserException : {}, message = {}, HttpStatus = {}",
@@ -71,7 +71,8 @@ public class MemberExceptionHandler extends ResponseEntityExceptionHandler {
 
         ResponseMessage rm = setResponseMessage(errorCode, null);
 
-        return new ResponseEntity<>(errorCode.getErrorMsg(), errorCode.getHttpStatus());
+        return new ResponseEntity<>(rm, HttpStatus.CONFLICT);
+//        return new ResponseEntity<>(errorCode.getErrorMsg(), errorCode.getHttpStatus());
 //        return new ResponseEntity<>(errorCode.getErrorMsg(), errorCode.getHttpStatus());
 //        return ResponseEntity
 //                .status(errorCode.getHttpStatus())

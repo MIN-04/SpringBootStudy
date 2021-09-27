@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 @Builder
 public class ResponseMessage {
     private final HttpStatus httpStatus;
-    private final String message;
-    private final String detailMsg;
+    private final String message; //ErrorCode message
+    private final String detailMsg; //ValidationMsgCode message
     private final Object resultData;
 
 //    public ResponseMessage(HttpStatus status, String message) {
