@@ -10,7 +10,10 @@ import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.domain.services.MemberRepository;
 import spring.study.common.exceptions.CustomException;
 
+import java.util.Optional;
+
 import static spring.study.common.enums.ErrorCode.DUPLICATED_MEMBER;
+import static spring.study.common.enums.ErrorCode.FAIL_DELETE_MEMBER;
 
 @Slf4j
 @Service
@@ -80,13 +83,16 @@ public class MemberService {
      * 회원 탈퇴
      */
     public void delete(String email) {
-        Member member = Member.builder()
-                .email(email)
-                .build();
 
-        log.info("[delete] member = {}", member);
+        log.info("[delete] email = {}", email);
 
-        memberRepository.delete(member);
+        memberRepository.deleteByEmail(email);
+
+        //회원 삭제가 되었는지 확인 (회원 찾기)
+        memberRepository.findByEmail(email)
+                .ifPresent(m -> {
+                    throw new CustomException(FAIL_DELETE_MEMBER);
+                });
     }
 
     /**
