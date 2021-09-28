@@ -29,19 +29,19 @@ class MemberRepositoryTest {
     void setUp() {
 
         MemberBasicInfo memberBasicInfo = MemberBasicInfo.builder()
-                .password("mandy1!")
-                .name("mandy")
+                .password("abcd1!")
+                .name("홍길동")
                 .mobileNum("010-1111-1111")
                 .gender("F")
-                .birthday("950424")
+                .birthday("001122")
                 .build();
 
         MemberAddressInfo memberAddressInfo = MemberAddressInfo.builder()
-                .address("강서구")
+                .address("Seoul")
                 .build();
 
         member = Member.builder()
-                .email("mandy@plgrim.com")
+                .email("hong@naver.com")
                 .memberBasicInfo(memberBasicInfo)
                 .memberAddressInfo(memberAddressInfo)
                 .build();
@@ -67,13 +67,13 @@ class MemberRepositoryTest {
         //when
         //case 1. 이메일만 같을 때
         Optional<Member> result1 = memberRepository
-                .findMemberByEmailOrMemberBasicInfo_MobileNum("mandy@plgrim.com", "010-1111-2222");
+                .findMemberByEmailOrMemberBasicInfo_MobileNum("hong@naver.com", "010-1111-2222");
         //case 2. 전화번호만 같을 때
         Optional<Member> result2 = memberRepository
-                .findMemberByEmailOrMemberBasicInfo_MobileNum("lizzy@plgrim.com", "010-1111-1111");
+                .findMemberByEmailOrMemberBasicInfo_MobileNum("park@naver.com", "010-1111-1111");
         //case 3. 이메일과 전화번호 둘 다 같을 때
         Optional<Member> result3 = memberRepository
-                .findMemberByEmailOrMemberBasicInfo_MobileNum("mandy@plgrim.com", "010-1111-1111");
+                .findMemberByEmailOrMemberBasicInfo_MobileNum("hong@naver.com", "010-1111-1111");
 
         //then
         //case 1
