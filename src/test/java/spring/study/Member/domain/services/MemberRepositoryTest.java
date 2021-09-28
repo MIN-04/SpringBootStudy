@@ -78,16 +78,13 @@ class MemberRepositoryTest {
         //then
         //case 1
         assertFalse(result1.isEmpty()); //false여야 통과
-        assertThat(result1.get().getEmail()).isEqualTo(member.getEmail());
+        assertThat(result1.get()).usingRecursiveComparison().isEqualTo(member);
         //case 2
         assertFalse(result2.isEmpty());
-        assertThat(result2.get().getMemberBasicInfo().getMobileNum())
-                .isEqualTo(member.getMemberBasicInfo().getMobileNum());
+        assertThat(result2.get()).usingRecursiveComparison().isEqualTo(member);
         //case 3
         assertFalse(result3.isEmpty());
-        assertThat(result3.get().getEmail()).isEqualTo(member.getEmail()); //이메일 비교
-        assertThat(result3.get().getMemberBasicInfo().getMobileNum()) //전화번호 비교
-                .isEqualTo(member.getMemberBasicInfo().getMobileNum());
+        assertThat(result3.get()).usingRecursiveComparison().isEqualTo(member);
 
     }
 
