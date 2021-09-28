@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface MemberRepository {
     Member save(Member member);
 //    void delete(Member member);
-    @Transactional
+    @Transactional //https://breakcoding.tistory.com/333 오류내용 해결책
     void deleteByEmail(String email);
 //    void deleteById(String email);
     //List<Member> findAll();
