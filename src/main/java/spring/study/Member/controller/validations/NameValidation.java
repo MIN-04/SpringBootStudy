@@ -35,9 +35,12 @@ public @interface NameValidation {
                 return false;
             }
 
-            //한글만 가능
-            addMsg(context, NAME_NOT_MATCH.getValidationMsg());
-            return Pattern.matches("[가-힣]*$", name);
+            if (!name.matches("^[가-힣]+$")){ //한글만 가능 (한글이 아닐 경우)
+                addMsg(context, NAME_NOT_MATCH.getValidationMsg());
+                return false;
+            }
+
+            return true;
         }
 
         // context 메시지 추가
