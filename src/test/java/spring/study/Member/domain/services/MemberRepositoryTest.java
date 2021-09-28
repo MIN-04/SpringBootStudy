@@ -11,7 +11,10 @@ import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 //@DataJpaTest
 @SpringBootTest
@@ -51,15 +54,40 @@ class MemberRepositoryTest {
         Member result = memberRepository.save(member);
 
         //then
-        assertThat(result).usingRecursiveComparison().isEqualTo(member); //객체 안에 객체 비교
+        assertThat(result).usingRecursiveComparison().isEqualTo(member); //객체 안에 있는 객체 비교
     }
 
     @Test
     @DisplayName("이메일 또는 전화번호 중복 찾기")
     void findMemberByEmailOrMemberBasicInfo_MobileNum() {
-    //given
+        //given
+        memberRepository.save(member);
+
         //when
+        //case 1. 이메일만 같을 때
+        Optional<Member> result1 = memberRepository
+                .findMemberByEmailOrMemberBasicInfo_MobileNum("mandy@plgrim.com", "010-1111-2222");
+        //case 2. 전화번호만 같을 때
+        Optional<Member> result2 = memberRepository
+                .findMemberByEmailOrMemberBasicInfo_MobileNum("lizzy@plgrim.com", "010-1111-1111");
+        //case 3. 이메일과 전화번호 둘 다 같을 때
+        Optional<Member> result3 = memberRepository
+                .findMemberByEmailOrMemberBasicInfo_MobileNum("mandy@plgrim.com", "010-1111-1111");
+
         //then
+        //case 1
+        assertFalse(result1.isEmpty()); //false여야 통과
+        assertThat(result1.get().getEmail()).isEqualTo(member.getEmail());
+        //case 2
+        assertFalse(result2.isEmpty());
+        assertThat(result2.get().getMemberBasicInfo().getMobileNum())
+                .isEqualTo(member.getMemberBasicInfo().getMobileNum());
+        //case 3
+        assertFalse(result3.isEmpty());
+        assertThat(result3.get().getEmail()).isEqualTo(member.getEmail()); //이메일 비교
+        assertThat(result3.get().getMemberBasicInfo().getMobileNum()) //전화번호 비교
+                .isEqualTo(member.getMemberBasicInfo().getMobileNum());
+
     }
 
     @Test
