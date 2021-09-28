@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 //@DataJpaTest
 @SpringBootTest
@@ -102,7 +103,13 @@ class MemberRepositoryTest {
     @DisplayName("회원 삭제")
     void delete() {
         //given
+        memberRepository.save(member);
+
         //when
+        memberRepository.deleteByEmail(member.getEmail());
+
         //then
+        Optional<Member> findMember = memberRepository.findByEmail(member.getEmail());
+        assertTrue(findMember.isEmpty());
     }
 }
