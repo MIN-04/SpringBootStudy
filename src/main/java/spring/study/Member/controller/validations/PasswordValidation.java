@@ -44,7 +44,7 @@ public @interface PasswordValidation {
             }
 
             String regex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{"+min+","+max+"}$";
-            if (!Pattern.matches(regex, password)){
+            if (!password.matches(regex)){
                 addMsg(context, PASSWORD_NOT_MATCH.getValidationMsg());
                 return false;
             }

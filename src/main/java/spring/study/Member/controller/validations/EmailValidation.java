@@ -9,7 +9,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.regex.Pattern;
 
 import static spring.study.common.enums.ValidationMsgCode.BLANK_VALIDATE;
 import static spring.study.common.enums.ValidationMsgCode.EMAIL_NOT_MATCH;
@@ -35,8 +34,13 @@ public @interface EmailValidation {
                 return false;
             }
 
-            addMsg(context, EMAIL_NOT_MATCH.getValidationMsg());
-            return Pattern.matches("^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$", email);
+            String regex = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$";
+            if(!email.matches(regex)){
+                addMsg(context, EMAIL_NOT_MATCH.getValidationMsg());
+                return false;
+            }
+
+            return true;
         }
 
         // context에 메세지 설정

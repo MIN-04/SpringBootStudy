@@ -9,7 +9,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.regex.Pattern;
 
 import static spring.study.common.enums.ValidationMsgCode.BLANK_VALIDATE;
 import static spring.study.common.enums.ValidationMsgCode.MOBILENUM_NOT_MATCH;
@@ -34,8 +33,13 @@ public @interface MobileNumValidation {
                 return false;
             }
 
-            addMsg(context, MOBILENUM_NOT_MATCH.getValidationMsg());
-            return Pattern.matches("01[016789]-[0-9]{3,4}-[0-9]{3,4}", mobileNum);
+            String regex = "01[016789]-[0-9]{3,4}-[0-9]{3,4}";
+            if(!mobileNum.matches(regex)) {
+                addMsg(context, MOBILENUM_NOT_MATCH.getValidationMsg());
+                return false;
+            }
+
+            return true;
         }
 
         // context에 메세지 설정
