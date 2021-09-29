@@ -10,8 +10,6 @@ import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.domain.services.MemberRepository;
 import spring.study.common.exceptions.CustomException;
 
-import java.util.Optional;
-
 import static spring.study.common.enums.ErrorCode.DUPLICATED_MEMBER;
 import static spring.study.common.enums.ErrorCode.FAIL_DELETE_MEMBER;
 
