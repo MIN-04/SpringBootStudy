@@ -65,7 +65,8 @@ public class MemberController {
 
         ResponseMessage rm = setResponseMessage(SUCCESS_JOIN_MEMBER, result);
 
-        return new ResponseEntity(rm, HttpStatus.OK);
+        return ResponseEntity.ok(rm);
+//        return new ResponseEntity(rm, HttpStatus.OK);
 //        return new ResponseEntity<>(SUCCESS_JOIN_MEMBER.getDetail(), SUCCESS_JOIN_MEMBER.getHttpStatus());
 //        return SuccessResponse.toResponseEntity(SUCCESS_JOIN_MEMBER);
 
@@ -89,7 +90,8 @@ public class MemberController {
 
         ResponseMessage rm = setResponseMessage(SUCCESS_MODIFY_MEMBER, result);
 
-        return new ResponseEntity(rm, HttpStatus.OK);
+        return ResponseEntity.ok(rm);
+//        return new ResponseEntity(rm, HttpStatus.OK);
     }
 
     /**
@@ -103,7 +105,8 @@ public class MemberController {
         memberService.delete(email);
         ResponseMessage rm = setResponseMessage(SUCCESS_DELETE_MEMBER, null);
 
-        return new ResponseEntity(rm, HttpStatus.OK);
+        return ResponseEntity.ok(rm);
+//        return new ResponseEntity(rm, HttpStatus.OK);
     }
 
     /**
@@ -120,7 +123,8 @@ public class MemberController {
         // page(현재 페이지)는 0에서 부터 시작하여 받은 page 값-1을 해준다.
         Page<Member> memberList = memberService.findAll(page-1, pageCount);
         ResponseMessage rm = setResponseMessage(SUCCESS_FINDALL_MEMBER, memberList);
-        return new ResponseEntity(rm, HttpStatus.OK);
+        return ResponseEntity.ok(rm);
+//        return new ResponseEntity(rm, HttpStatus.OK);
     }
 
 }
