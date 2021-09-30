@@ -1,7 +1,6 @@
 package spring.study.Member.application;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,16 +16,16 @@ import spring.study.common.exceptions.CustomException;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static spring.study.common.enums.ErrorCode.DUPLICATED_MEMBER;
 
 @ExtendWith(MockitoExtension.class)
-class MemberServiceJoinTest {
+class MemberServiceModifyTest {
 
     @InjectMocks
     MemberService memberService;
@@ -61,52 +60,34 @@ class MemberServiceJoinTest {
             .build();
 
     @Test
-    @DisplayName("회원 가입 성공")
+    @DisplayName("회원 수정 성공")
     void joinSuccess() {
         //given
+        MemberCommand testCommand = MemberCommand.builder()
+                .email("hong@naver.com")
+                .basicInfo(MemberBasicInfo.builder()
+                        .password("abcd1!")
+                        .name("홍길동1")
+                        .mobileNum("010-1111-2222")
+                        .gender("F")
+                        .birthday("001122")
+                        .build())
+                .addressInfo(MemberAddressInfo.builder()
+                        .address("Seoul")
+                        .build())
+                .build();
+
         given(memberRepository.save(any())).willReturn(member);
-        //아래는 실패 코드 (왤까?)
-        //given(memberRepository.save(member)).willReturn(member);
-        //given(memberRepository.save(eq(member))).willReturn(member);
+
 
         //then
-        Member result = memberService.join(memberCommand);
+        memberService.join(memberCommand);
+        Member result = memberService.modify(testCommand);
 
         //when
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(member);
+        assertThat(result.getEmail()).isEqualTo(member.getEmail());
+        assertThat(result).usingRecursiveComparison().isNotEqualTo(member);
     }
 
-    @Test
-    @DisplayName("회원가입 실패 - 이메일 중복")
-    void joinFailureEmail() {
-        //given
-        given(memberRepository
-                .findMemberByEmailOrMemberBasicInfo_MobileNum(eq("hong@naver.com"), anyString()))
-                .willReturn(Optional.of(member))
-                .willThrow(new CustomException(DUPLICATED_MEMBER));
-        //다른 방법 (성공)
-        //given(memberRepository
-        //        .findMemberByEmailOrMemberBasicInfo_MobileNum(eq(member.getEmail()), anyString()))
-        //        .willThrow(new CustomException(DUPLICATED_MEMBER));
 
-        //when
-        //then
-        assertThrows(CustomException.class, () ->memberService.join(memberCommand));
-
-    }
-
-    @Test
-    @DisplayName("회원가입 실패 - 전화번호 중복")
-    void joinFailureMobileNum() {
-        //given
-        given(memberRepository
-                .findMemberByEmailOrMemberBasicInfo_MobileNum(anyString(),
-                        eq("010-1111-1111")))
-                .willReturn(Optional.of(member))
-                .willThrow(new CustomException(DUPLICATED_MEMBER));
-
-        //when
-        //then
-        assertThrows(CustomException.class, () -> memberService.join(memberCommand));
-    }
 }
