@@ -20,6 +20,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static spring.study.common.enums.ErrorCode.DUPLICATED_MEMBER;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,37 +34,31 @@ class MemberServiceJoinTest {
     @Mock
     MemberRepository memberRepository;
 
-    MemberCommand memberCommand;
-    Member member;
+    MemberBasicInfo memberBasicInfo = MemberBasicInfo.builder()
+            .password("abcd1!")
+            .name("홍길동")
+            .mobileNum("010-1111-1111")
+            .gender("F")
+            .birthday("001122")
+            .build();
 
-    @BeforeEach
-    void setUp() {
-        MemberBasicInfo memberBasicInfo = MemberBasicInfo.builder()
-                .password("abcd1!")
-                .name("홍길동")
-                .mobileNum("010-1111-1111")
-                .gender("F")
-                .birthday("001122")
-                .build();
+    MemberAddressInfo memberAddressInfo = MemberAddressInfo.builder()
+            .address("Seoul")
+            .build();
 
-        MemberAddressInfo memberAddressInfo = MemberAddressInfo.builder()
-                .address("Seoul")
-                .build();
+    // MemberCommand
+    MemberCommand memberCommand = MemberCommand.builder()
+            .email("hong@naver.com")
+            .basicInfo(memberBasicInfo)
+            .addressInfo(memberAddressInfo)
+            .build();
 
-        // MemberCommand
-        memberCommand = MemberCommand.builder()
-                .email("hong@naver.com")
-                .basicInfo(memberBasicInfo)
-                .addressInfo(memberAddressInfo)
-                .build();
-
-        // Member
-        member = Member.builder()
-                .email("hong@naver.com")
-                .memberBasicInfo(memberBasicInfo)
-                .memberAddressInfo(memberAddressInfo)
-                .build();
-    }
+    // Member
+    Member member = Member.builder()
+            .email("hong@naver.com")
+            .memberBasicInfo(memberBasicInfo)
+            .memberAddressInfo(memberAddressInfo)
+            .build();
 
     @Test
     @DisplayName("회원 가입 성공")
@@ -88,9 +85,9 @@ class MemberServiceJoinTest {
                 .willReturn(Optional.of(member))
                 .willThrow(new CustomException(DUPLICATED_MEMBER));
         //다른 방법 (성공)
-//        given(memberRepository
-//                .findMemberByEmailOrMemberBasicInfo_MobileNum(eq(member.getEmail()), anyString()))
-//                .willThrow(new CustomException(DUPLICATED_MEMBER));
+        //given(memberRepository
+        //        .findMemberByEmailOrMemberBasicInfo_MobileNum(eq(member.getEmail()), anyString()))
+        //        .willThrow(new CustomException(DUPLICATED_MEMBER));
 
         //when
         //then
@@ -111,6 +108,18 @@ class MemberServiceJoinTest {
         //when
         //then
         assertThrows(CustomException.class, () -> memberService.join(memberCommand));
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 성공")
+    void successDelete() {
+        //given
+
+        //when
+        memberService.delete(memberCommand.getEmail());
+
+        //then
+        verify(memberRepository, times(1)).deleteByEmail(memberCommand.getEmail());
     }
 
 }

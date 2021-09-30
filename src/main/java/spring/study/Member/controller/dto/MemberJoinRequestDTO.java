@@ -1,6 +1,7 @@
 package spring.study.Member.controller.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import spring.study.Member.controller.validations.EmailValidation;
 import spring.study.Member.controller.validations.MobileNumValidation;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 //@Data
 @Getter
 @AllArgsConstructor
+@Builder
 public class MemberJoinRequestDTO {
 
     @NotBlank @EmailValidation
@@ -25,17 +27,5 @@ public class MemberJoinRequestDTO {
     private final String mobileNum; //전화번호
     private final String gender; //성별
     private final String birthday; //생년월일
-
-//    public Member toEntity() {
-//        return Member.builder()
-//                .email(this.email)
-//                .password(this.password)
-//                .name(this.name)
-//                .address(this.address)
-//                .mobileNum(this.mobileNum)
-//                .gender(this.gender)
-//                .birthday(this.birthday)
-//                .build();
-//    }
 
 }
