@@ -12,7 +12,8 @@ public enum ErrorCode {
 
     DUPLICATED_MEMBER(CONFLICT, "이미 존재하는 회원입니다."),
     FAIL_VALIDATE(BAD_REQUEST, "유효성 통과 실패"),
-    FAIL_DELETE_MEMBER(BAD_REQUEST, "회원 탈퇴 실패");
+    FAIL_DELETE_MEMBER(BAD_REQUEST, "회원 탈퇴 실패"),
+    NOT_EXIST_MEMBER(BAD_REQUEST, "탈퇴할 회원이 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String errorMsg;
