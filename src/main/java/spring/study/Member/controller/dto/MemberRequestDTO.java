@@ -18,7 +18,8 @@ import javax.validation.constraints.NotBlank;
 @Builder
 public class MemberRequestDTO {
 
-    @NotBlank @EmailValidation
+    //@NotBlank
+    @EmailValidation
     private String email; //이메일 (회원 ID)
     @PasswordValidation(min = 3, max = 8)
     private String password; //패스워드
