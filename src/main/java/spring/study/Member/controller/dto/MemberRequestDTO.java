@@ -21,7 +21,7 @@ public class MemberRequestDTO {
     //@NotBlank
     @EmailValidation
     private String email; //이메일 (회원 ID)
-    @PasswordValidation(min = 3, max = 8)
+    @PasswordValidation(min = 4, max = 8)
     private String password; //패스워드
     @NameValidation
     private String name; //이름

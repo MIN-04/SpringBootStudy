@@ -1,32 +1,27 @@
 package spring.study.Member.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import spring.study.Member.controller.dto.MemberRequestDTO;
 import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
-import spring.study.common.enums.ErrorCode;
-import spring.study.common.enums.ValidationMsgCode;
 import spring.study.common.responses.ResponseMessage;
 
-import static org.hamcrest.Matchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static spring.study.common.enums.ErrorCode.FAIL_VALIDATE;
 import static spring.study.common.enums.SuccessCode.SUCCESS_JOIN_MEMBER;
-import static spring.study.common.enums.ValidationMsgCode.BLANK_VALIDATE;
-import static spring.study.common.enums.ValidationMsgCode.EMAIL_NOT_MATCH;
+import static spring.study.common.enums.ValidationMsgCode.*;
 
 //@WebMvcTest(MemberController.class)
 //@ExtendWith(MockitoExtension.class)
@@ -38,7 +33,6 @@ class MemberControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
     ObjectMapper mapper = new ObjectMapper();
 
     //회원가입 성공시 return 되는 결과값
@@ -87,9 +81,9 @@ class MemberControllerTest {
         //when
         //then
         mockMvc.perform(post("/member/new")
-                    .contentType(APPLICATION_JSON)
-                    .content(mapper.writeValueAsString(dto))
-                    .accept(APPLICATION_JSON))
+        .contentType(APPLICATION_JSON)
+        .content(mapper.writeValueAsString(dto))
+        .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(mapper.writeValueAsString(message)))
                 .andDo(print());
@@ -104,7 +98,7 @@ class MemberControllerTest {
 
     @Test
     @DisplayName("회원 가입 실패 - email validation 통과 X")
-    void failJoinValidationEmailNull() throws Exception {
+    void failJoinValidationEmail() throws Exception {
         //given
         //case 1. email이 null일 때
         MemberRequestDTO dtoNull = MemberRequestDTO.builder()
@@ -121,7 +115,6 @@ class MemberControllerTest {
                 .httpStatus(FAIL_VALIDATE.getHttpStatus())
                 .message(FAIL_VALIDATE.getErrorMsg())
                 .detailMsg(BLANK_VALIDATE.getValidationMsg())
-                .resultData(member)
                 .build();
 
         //case 2. email 형식이 안맞을 때
@@ -139,30 +132,130 @@ class MemberControllerTest {
                 .httpStatus(FAIL_VALIDATE.getHttpStatus())
                 .message(FAIL_VALIDATE.getErrorMsg())
                 .detailMsg(EMAIL_NOT_MATCH.getValidationMsg())
-                .resultData(member)
                 .build();
 
         //when
         //then
         //case 1. email이 null일 때
         mockMvc.perform(post("/member/new")
-                    .accept(APPLICATION_JSON)
-                    .content(mapper.writeValueAsString(dtoNull))
-                    .contentType(APPLICATION_JSON))
+        .accept(APPLICATION_JSON)
+        .content(mapper.writeValueAsString(dtoNull))
+        .contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(mapper.writeValueAsString(messageNull)))
                 .andDo(print());
 
         //case 2. email 형식이 안맞을 때
         mockMvc.perform(post("/member/new")
-                    .accept(APPLICATION_JSON)
-                    .content(mapper.writeValueAsString(dtoMissMatch))
-                    .contentType(APPLICATION_JSON))
+        .accept(APPLICATION_JSON)
+        .content(mapper.writeValueAsString(dtoMissMatch))
+        .contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(mapper.writeValueAsString(messageMissMatch)))
                 .andDo(print());
 
     }
 
+    @Test
+    @DisplayName("회원 가입 실패 - password validation 통과 X")
+    void failJoinValidationPassword() throws Exception {
+        //given
+        //case 1. password가 빈칸일 때
+        MemberRequestDTO dtoNull = MemberRequestDTO.builder()
+                .email("hong@naver.com")
+                .password("")
+                .name("홍길동")
+                .address("Seoul")
+                .mobileNum("010-1111-1111")
+                .gender("M")
+                .birthday("001122")
+                .build();
+
+        ResponseMessage messageNull = ResponseMessage.builder()
+                .httpStatus(FAIL_VALIDATE.getHttpStatus())
+                .message(FAIL_VALIDATE.getErrorMsg())
+                .detailMsg(BLANK_VALIDATE.getValidationMsg())
+                .build();
+
+        //case 2. password 길이가 min(=4) 보다 짧을 때
+        MemberRequestDTO dtoMin = MemberRequestDTO.builder()
+                .email("hong@naver.com")
+                .password("c1!")
+                .name("홍길동")
+                .address("Seoul")
+                .mobileNum("010-1111-1111")
+                .gender("M")
+                .birthday("001122")
+                .build();
+
+        //case 3. password 길이가 max(=8) 보다 길 때
+        MemberRequestDTO dtoMax = MemberRequestDTO.builder()
+                .email("hong@naver.com")
+                .password("hhhhhhhh1!")
+                .name("홍길동")
+                .address("Seoul")
+                .mobileNum("010-1111-1111")
+                .gender("M")
+                .birthday("001122")
+                .build();
+
+        //case 4. password 형식이 안맞을 때
+        MemberRequestDTO dtoMissMatch = MemberRequestDTO.builder()
+                .email("hong@naver.com")
+                .password("hhhhhh")
+                .name("홍길동")
+                .address("Seoul")
+                .mobileNum("010-1111-1111")
+                .gender("M")
+                .birthday("001122")
+                .build();
+
+        //case 2,3,4는 response message가 똑같다.
+        ResponseMessage messageMissMatch = ResponseMessage.builder()
+                .httpStatus(FAIL_VALIDATE.getHttpStatus())
+                .message(FAIL_VALIDATE.getErrorMsg())
+                .detailMsg(PASSWORD_NOT_MATCH.getValidationMsg())
+                .build();
+
+        //when
+        //then
+        //case 1. password가 빈칸일 때
+        mockMvc.perform(post("/member/new")
+        .accept(APPLICATION_JSON)
+        .content(mapper.writeValueAsString(dtoNull))
+        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(mapper.writeValueAsString(messageNull)))
+                .andDo(print());
+
+        //case 2. password 길이가 min(=4) 보다 짧을 때
+        mockMvc.perform(post("/member/new")
+        .accept(APPLICATION_JSON)
+        .content(mapper.writeValueAsString(dtoMin))
+        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(mapper.writeValueAsString(messageMissMatch)))
+                .andDo(print());
+
+        //case 3. password 길이가 max(=8) 보다 길 때
+        mockMvc.perform(post("/member/new")
+        .accept(APPLICATION_JSON)
+        .content(mapper.writeValueAsString(dtoMax))
+        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(mapper.writeValueAsString(messageMissMatch)))
+                .andDo(print());
+
+        //case 4. password 형식이 안맞을 때
+        mockMvc.perform(post("/member/new")
+                .accept(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(dtoMissMatch))
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(mapper.writeValueAsString(messageMissMatch)))
+                .andDo(print());
+
+
+    }
 
 }
