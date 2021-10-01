@@ -3,13 +3,11 @@ package spring.study.Member.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import spring.study.Member.application.MemberService;
-import spring.study.Member.controller.dto.MemberJoinRequestDTO;
-import spring.study.Member.controller.dto.MemberModifyRequestDTO;
+import spring.study.Member.controller.dto.MemberRequestDTO;
 import spring.study.Member.controller.dto.mapper.MemberRequestMapper;
 import spring.study.Member.controller.validations.EmailValidation;
 import spring.study.Member.domain.aggregates.Member;
@@ -53,7 +51,7 @@ public class MemberController {
      * @return
      */
     @PostMapping("/new")
-    public ResponseEntity join(@RequestBody @Valid MemberJoinRequestDTO dto) {
+    public ResponseEntity join(@RequestBody @Valid MemberRequestDTO dto) {
 
         log.info("[join] dto = {}", dto);
 
@@ -78,7 +76,7 @@ public class MemberController {
      * @return
      */
     @PostMapping("/modify")
-    public ResponseEntity modify(@RequestBody @Valid MemberModifyRequestDTO dto) {
+    public ResponseEntity modify(@RequestBody @Valid MemberRequestDTO dto) {
 
         log.info("[modify] dto = {}", dto);
 
