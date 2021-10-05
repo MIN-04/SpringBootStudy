@@ -11,6 +11,8 @@ import spring.study.Member.domain.services.MemberRepository;
 import spring.study.Member.infraStructure.repository.MemberJPARepository;
 import spring.study.common.exceptions.CustomException;
 
+import java.util.Optional;
+
 import static spring.study.common.enums.ErrorCode.*;
 
 @Slf4j
@@ -64,10 +66,24 @@ public class MemberService {
                 .build();
         log.info("[modify - Service] member = {}", member);
 
-        //수정할 회원이 있는지 찾기
+        //수정할 회원이 있는지 찾기 -> 없을 경우 Exception 발생
         if(memberRepository.findById(member.getId()).isEmpty()){
             throw new CustomException(NOT_EXIST_MEMBER);
         }
+
+        //수정할 이메일, 전화번호가 다른 유저와 중복인지 확인 -> 수정할 Member Id와 찾은 Member Id 비교
+        //email 중복 찾기
+        Optional<Member> emailMember = memberRepository.findByEmail(member.getEmail());
+        log.info("[modify - Service] emailMember = {}", emailMember);
+
+        //mobileNum 중복 찾기
+        String mobileNum = member.getMemberBasicInfo().getMobileNum(); //member의 mobileNum
+        Optional<Member> mobileMember = memberRepository.findIdByMemberBasicInfo_MobileNum(mobileNum);
+        log.info("[modify - Service] mobileMember = {}", mobileMember);
+
+        //수정할 Member Id와 찾은 Member Id 비교할 메서드
+        findDuplicatedMember(member.getId(), emailMember, mobileMember);
+
 
         //회원 수정
         return memberRepository.save(member);
@@ -97,7 +113,6 @@ public class MemberService {
 
     /**
      * 회원 목록 조회
-     *
      * @param page      : 페이지 index
      * @param pageCount : 한 페이지당 데이터 수
      * @return
@@ -110,4 +125,26 @@ public class MemberService {
         return memberRepository.findAll(pageRequest);
     }
 
+    /**
+     * 수정할 Member Id와 찾은 Member Id 비교 메서드
+     * @param memberId
+     * @param emailMember
+     * @param mobileMember
+     */
+    public void findDuplicatedMember(Long memberId, Optional<Member> emailMember, Optional<Member> mobileMember) {
+        //중복된 이메일을 가진 회원이 존재할 때
+        if (emailMember.isPresent()) {
+            //수정할 member와 찾은 member id가 다를 때 -> Exception 발생
+            if (!memberId.equals(emailMember.get().getId())) {
+                throw new CustomException(DUPLICATED_EMAIL);
+            }
+        }
+        //중복된 전화번호를 가진 회원이 존재할 때
+        if (mobileMember.isPresent()) {
+            //수정할 member와 찾은 member id가 다를 때 -> Exception 발생
+            if (!memberId.equals(mobileMember.get().getId())) {
+                throw new CustomException(DUPLICATED_MOBILENUM);
+            }
+        }
+    }
 }

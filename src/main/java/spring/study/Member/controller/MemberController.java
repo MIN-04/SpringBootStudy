@@ -79,7 +79,11 @@ public class MemberController {
      * @param dto
      * @return
      */
-    @PostMapping("/modify")
+    /** 궁금한 점! 수정은 PUT? POST?
+     * PUT으로 사용할 경우 리소스를 덮어씌우는 거라 PATCH를 사용하라고 했음
+     * 하지만 PATCH는 지원 안하는 곳이 많아 POST를 사용한다고 했다.
+     * */
+    @PostMapping("/members")
     public ResponseEntity modify(@RequestBody @Valid MemberRequestModifyDTO dto) {
 
         log.info("[modify] dto = {}", dto);
@@ -96,7 +100,7 @@ public class MemberController {
         ResponseMessage rm = setResponseMessage(SUCCESS_MODIFY_MEMBER, result);
 
         return ResponseEntity.ok(rm);
-//        return new ResponseEntity(rm, HttpStatus.OK);
+        //return new ResponseEntity(rm, HttpStatus.OK);
     }
 
     /**
@@ -137,10 +141,11 @@ public class MemberController {
         log.info("[findAll - Controller] page = {}, pageCount = {}", page, pageCount);
 
         //서비스의 회원 목록 조회 메서드 호출 - return Page
-        // page(현재 페이지)는 0에서 부터 시작하여 받은 page 값-1을 해준다.
+
+        //page(현재 페이지)는 0에서 부터 시작하여 받은 page 값-1을 해준다.
         Page<Member> members = memberService.findAll(page-1, pageCount);
         //Page 객체에서 회원 목록만 memberList에 담기기
-       List<Member> memberList = members.getContent();
+        List<Member> memberList = members.getContent();
         log.info("[findAll - Controller] memberList = {}", memberList);
 
         //응답 메시지 만드는 메서드 호출
