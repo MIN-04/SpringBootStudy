@@ -27,13 +27,15 @@ public class MemberService {
      * 회원 가입
      */
     public Member join(MemberCommand command) {
+        log.info("[join - Service] command = {}", command);
+
+        //MemberCommand -> Member
         Member member = Member.builder()
                 .email(command.getEmail())
                 .memberBasicInfo(command.getBasicInfo())
                 .memberAddressInfo(command.getAddressInfo())
                 .build();
-
-        log.info("[join] member = {}", member);
+        log.info("[join - Service] member = {}", member);
 
         //아이디 중복체크 (이메일과 번호)
         memberRepository.findMemberByEmailOrMemberBasicInfo_MobileNum(member.getEmail(),
@@ -41,21 +43,6 @@ public class MemberService {
                 .ifPresent(m -> {
                     throw new CustomException(DUPLICATED_MEMBER);
                 });
-
-        /* memberRepository.findMemberByEmailAndMemberBasicInfo_MobileNum(member.getEmail(),
-                member.getMemberBasicInfo().getMobileNum())
-                .ifPresent(m -> {
-                    throw new IllegalStateException("이미 존재하는 회원입니다.");
-                });
-        memberRepository.findByEmail(member.getEmail())
-                .ifPresent(m -> {
-                    throw new IllegalStateException("이미 존재하는 회원입니다.");
-                });
-        //이메일 중복체크
-        memberRepository.findByMobileNum(member.getMemberValueObject().getMobileNum())
-                .ifPresent(m -> {
-                    throw new IllegalStateException("이미 존재하는 회원입니다.");
-                });*/
 
         //회원 저장
         return memberRepository.save(member);
@@ -65,14 +52,23 @@ public class MemberService {
      * 회원 수정
      */
     public Member modify(MemberCommand command) {
+        log.info("[modify - Service] command = {}", command);
+
+        //MemberCommand -> Member
         Member member = Member.builder()
+                .id(command.getId())
                 .email(command.getEmail())
                 .memberBasicInfo(command.getBasicInfo())
                 .memberAddressInfo(command.getAddressInfo())
                 .build();
+        log.info("[modify - Service] member = {}", member);
 
-        log.info("[modify] member = {}", member);
+        //수정할 회원이 있는지 찾기
+        if(memberRepository.findById(member.getId()).isEmpty()){
+            throw new CustomException(NOT_EXIST_MEMBER);
+        }
 
+        //회원 수정
         return memberRepository.save(member);
     }
 

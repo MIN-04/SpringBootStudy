@@ -11,12 +11,11 @@ import spring.study.Member.controller.validations.PasswordValidation;
 
 import javax.validation.constraints.NotBlank;
 
-//@Data
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberRequestDTO {
+public class MemberRequestJoinDTO {
 
     //@NotBlank
     @EmailValidation
@@ -29,6 +28,6 @@ public class MemberRequestDTO {
     @MobileNumValidation
     private String mobileNum; //전화번호
     private String gender; //성별
-    private String birthday; //생년월일
+    private String birth; //생년월일
 
 }

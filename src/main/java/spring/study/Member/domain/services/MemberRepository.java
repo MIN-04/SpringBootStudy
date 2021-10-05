@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface MemberRepository {
     Member save(Member member);
 //    void delete(Member member);
+
+    //이거 안쓰고 해보기
     @Transactional //https://breakcoding.tistory.com/333 오류내용 해결책
     void deleteByEmail(String email);
 //    void deleteById(String email);
@@ -21,6 +23,7 @@ public interface MemberRepository {
     Page<Member> findAll(Pageable pageable);
     Optional<Member> findMemberByEmailOrMemberBasicInfo_MobileNum(String email, String mobileNum);
     Optional<Member> findByEmail(String email);
+    Optional<Member> findById(Long id);
 //    Optional<Member> findMemberByMemberBasicInfo_MobileNum(String mobileNum);
 //    Optional<Member> findByMobileNum(String mobileNum);
 }

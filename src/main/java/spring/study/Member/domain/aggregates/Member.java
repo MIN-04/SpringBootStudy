@@ -7,7 +7,6 @@ import spring.study.Member.domain.valueObjects.MemberBasicInfo;
 import javax.persistence.*;
 
 @Entity
-//@Data
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,9 +14,9 @@ import javax.persistence.*;
 @Builder
 public class Member {
 
-//    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id; // 테이블 ID
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // 테이블 ID
+
     private String email; //이메일 (회원 ID)
 
     @Embedded

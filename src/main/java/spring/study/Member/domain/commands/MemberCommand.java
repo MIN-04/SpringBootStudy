@@ -10,6 +10,7 @@ import spring.study.Member.domain.valueObjects.MemberBasicInfo;
 @AllArgsConstructor
 @Builder
 public class MemberCommand {
+    private final Long id; //id (회원 PKP
     private final String email; //이메일 (회원 ID)
     private final MemberBasicInfo basicInfo;
     private final MemberAddressInfo addressInfo;

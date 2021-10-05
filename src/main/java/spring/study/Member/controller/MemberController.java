@@ -7,7 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import spring.study.Member.application.MemberService;
-import spring.study.Member.controller.dto.MemberRequestDTO;
+import spring.study.Member.controller.dto.MemberRequestJoinDTO;
+import spring.study.Member.controller.dto.MemberRequestModifyDTO;
 import spring.study.Member.controller.dto.mapper.MemberRequestMapper;
 import spring.study.Member.controller.validations.EmailValidation;
 import spring.study.Member.domain.aggregates.Member;
@@ -37,7 +38,6 @@ public class MemberController {
      * 응답 메시지 만드는 메서드
      */
     private ResponseMessage setResponseMessage(SuccessCode sc, Object result) {
-//        return new ResponseMessage(sc.getHttpStatus(), sc.getSuccessMsg(), null, result);
         return ResponseMessage.builder()
                 .httpStatus(sc.getHttpStatus())
                 .message(sc.getSuccessMsg())
@@ -51,16 +51,18 @@ public class MemberController {
      * @return
      */
     @PostMapping("/new")
-    public ResponseEntity join(@RequestBody @Valid MemberRequestDTO dto) {
+    public ResponseEntity join(@RequestBody @Valid MemberRequestJoinDTO dto) {
 
-        log.info("[join] dto = {}", dto);
+        log.info("[join - Controller] dto = {}", dto);
 
+        //MemberRequestJoinDTO -> Membercommand
         MemberCommand command = mapper.toCommand(dto);
-        log.info("[join] command = {}", command);
+        log.info("[join - Controller] command = {}", command);
 
         Member result = memberService.join(command);
-        log.info("[join] result = {}", result.toString());
+        log.info("[join - Controller] result = {}", result.toString());
 
+        //응답 메시지 만드는 메서드 호출
         ResponseMessage rm = setResponseMessage(SUCCESS_JOIN_MEMBER, result);
 
         return ResponseEntity.ok(rm);
@@ -76,16 +78,18 @@ public class MemberController {
      * @return
      */
     @PostMapping("/modify")
-    public ResponseEntity modify(@RequestBody @Valid MemberRequestDTO dto) {
+    public ResponseEntity modify(@RequestBody @Valid MemberRequestModifyDTO dto) {
 
         log.info("[modify] dto = {}", dto);
 
+        //MemberRequestModifyDTO -> Membercommand
         MemberCommand command = mapper.toCommand(dto);
         log.info("[modify] command = {}", command);
 
         Member result = memberService.modify(command);
         log.info("[modify] result = {}", result.toString());
 
+        //응답 메시지 만드는 메서드 호출
         ResponseMessage rm = setResponseMessage(SUCCESS_MODIFY_MEMBER, result);
 
         return ResponseEntity.ok(rm);
@@ -96,6 +100,8 @@ public class MemberController {
      * 회원 삭제
      * @return
      */
+    //@DeleteMapping 으로
+    //url에 delete가 없다
     @GetMapping("/delete/{email}")
     @Validated
     public ResponseEntity delete(@PathVariable @EmailValidation String email) {
@@ -113,6 +119,7 @@ public class MemberController {
      * @param pageCount : 한 페이지당 데이터 수
      * @return
      */
+    //수정 {page}/{pageCount} queryParam으로 받기
     @GetMapping("/findAll/{page}/{pageCount}")
     public ResponseEntity findAll(@PathVariable int page, @PathVariable int pageCount){
 
