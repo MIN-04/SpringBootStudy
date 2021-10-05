@@ -9,12 +9,15 @@ import spring.study.Member.controller.validations.MobileNumValidation;
 import spring.study.Member.controller.validations.NameValidation;
 import spring.study.Member.controller.validations.PasswordValidation;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MemberRequestModifyDTO {
 
+    @NotNull
     private Long id; //id (회원 PK)
     //@NotBlank
     @EmailValidation

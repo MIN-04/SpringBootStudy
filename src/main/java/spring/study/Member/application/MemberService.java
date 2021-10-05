@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.domain.services.MemberRepository;
+import spring.study.Member.infraStructure.repository.MemberJPARepository;
 import spring.study.common.exceptions.CustomException;
 
 import static spring.study.common.enums.ErrorCode.*;
@@ -16,10 +17,10 @@ import static spring.study.common.enums.ErrorCode.*;
 @Service
 public class MemberService {
 
-    private MemberRepository memberRepository;
+    private MemberJPARepository memberRepository;
 
     @Autowired
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberJPARepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
@@ -75,20 +76,20 @@ public class MemberService {
     /**
      * 회원 탈퇴
      */
-    public void delete(String email) {
+    public void delete(Long id) {
 
-        log.info("[delete] email = {}", email);
+        log.info("[delete] id = {}", id);
 
         //삭제할 회원이 있는지 찾기
-        if(memberRepository.findByEmail(email).isEmpty()){
+        if(memberRepository.findById(id).isEmpty()){
             throw new CustomException(NOT_EXIST_MEMBER);
         }
 
         //회원 삭제
-        memberRepository.deleteByEmail(email);
+        memberRepository.deleteById(id);
 
         //회원 삭제가 되었는지 확인 (회원 찾기)
-        memberRepository.findByEmail(email)
+        memberRepository.findById(id)
                 .ifPresent(m -> {
                     throw new CustomException(FAIL_DELETE_MEMBER);
                 });
