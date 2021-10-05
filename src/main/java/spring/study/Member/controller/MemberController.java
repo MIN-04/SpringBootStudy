@@ -119,17 +119,21 @@ public class MemberController {
      * @param pageCount : 한 페이지당 데이터 수
      * @return
      */
-    //수정 {page}/{pageCount} queryParam으로 받기
-    @GetMapping("/findAll/{page}/{pageCount}")
-    public ResponseEntity findAll(@PathVariable int page, @PathVariable int pageCount){
+    //21.10.01 피드백 (10.05 수정)
+    //회원 목록 조회 같은 건 @Pathvariable {page}/{pageCount}로 하지 않는다. → queryParam으로 받기
+    @GetMapping("/members")
+    public ResponseEntity findAll(@RequestParam int page, @RequestParam int pageCount){
 
-        log.info("[findAll] page = {}, pageCount = {}", page, pageCount);
+        log.info("[findAll - Controller] page = {}, pageCount = {}", page, pageCount);
 
         // page(현재 페이지)는 0에서 부터 시작하여 받은 page 값-1을 해준다.
         Page<Member> memberList = memberService.findAll(page-1, pageCount);
+        log.info("[findAll - Controller] memberList = {}", memberList);
+
+        //응답 메시지 만드는 메서드 호출
         ResponseMessage rm = setResponseMessage(SUCCESS_FINDALL_MEMBER, memberList);
         return ResponseEntity.ok(rm);
-//        return new ResponseEntity(rm, HttpStatus.OK);
+        //return new ResponseEntity(rm, HttpStatus.OK);
     }
 
 }
