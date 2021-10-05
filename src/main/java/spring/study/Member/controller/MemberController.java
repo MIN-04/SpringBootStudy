@@ -66,9 +66,9 @@ public class MemberController {
         ResponseMessage rm = setResponseMessage(SUCCESS_JOIN_MEMBER, result);
 
         return ResponseEntity.ok(rm);
-//        return new ResponseEntity(rm, HttpStatus.OK);
-//        return new ResponseEntity<>(SUCCESS_JOIN_MEMBER.getDetail(), SUCCESS_JOIN_MEMBER.getHttpStatus());
-//        return SuccessResponse.toResponseEntity(SUCCESS_JOIN_MEMBER);
+        //return new ResponseEntity(rm, HttpStatus.OK);
+        //return new ResponseEntity<>(SUCCESS_JOIN_MEMBER.getDetail(), SUCCESS_JOIN_MEMBER.getHttpStatus());
+        //return SuccessResponse.toResponseEntity(SUCCESS_JOIN_MEMBER);
 
     }
 
@@ -121,6 +121,7 @@ public class MemberController {
      */
     //21.10.01 피드백 (10.05 수정)
     //회원 목록 조회 같은 건 @Pathvariable {page}/{pageCount}로 하지 않는다. → queryParam으로 받기
+    //member/members?page=1&pageCount=10
     @GetMapping("/members")
     public ResponseEntity findAll(@RequestParam int page, @RequestParam int pageCount){
 
@@ -132,6 +133,7 @@ public class MemberController {
 
         //응답 메시지 만드는 메서드 호출
         ResponseMessage rm = setResponseMessage(SUCCESS_FINDALL_MEMBER, memberList);
+
         return ResponseEntity.ok(rm);
         //return new ResponseEntity(rm, HttpStatus.OK);
     }

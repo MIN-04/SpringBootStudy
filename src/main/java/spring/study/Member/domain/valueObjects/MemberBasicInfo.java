@@ -20,5 +20,5 @@ public class MemberBasicInfo {
     @Column(name = "MOBILENUM")
     private String mobileNum; //전화번호
     private String gender; //성별
-    private String birthday; //생년월일
+    private String birth; //생년월일
 }

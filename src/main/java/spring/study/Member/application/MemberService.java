@@ -84,6 +84,7 @@ public class MemberService {
             throw new CustomException(NOT_EXIST_MEMBER);
         }
 
+        //회원 삭제
         memberRepository.deleteByEmail(email);
 
         //회원 삭제가 되었는지 확인 (회원 찾기)
@@ -102,8 +103,9 @@ public class MemberService {
      */
     public Page<Member> findAll(int page, int pageCount) {
         PageRequest pageRequest = PageRequest.of(page, pageCount);
-        log.info("[findAll] pageRequest = {}", pageRequest);
+        log.info("[findAll - Service] pageRequest = {}", pageRequest);
 
+        //회원 목록 조회
         return memberRepository.findAll(pageRequest);
     }
 
