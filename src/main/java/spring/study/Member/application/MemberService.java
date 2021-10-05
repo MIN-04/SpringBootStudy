@@ -146,5 +146,18 @@ public class MemberService {
                 throw new CustomException(DUPLICATED_MOBILENUM);
             }
         }
+
+        /** 궁금한 점!
+         * 이메일과 전화번호 중복체크 할 때 repository 메서드를 하나로 합쳐줬었다.
+         * 그런데 수정에서 어떤 것이 중복인지 안알려주면 안된다고 생각했다.
+         * 이메일과 전화번호 중복체크를 나누는게 맞을지 하나로 합치는게 맞을지 궁금
+         * 아래는 합친 코드
+         * */
+        /* if (emailMember.isPresent() || mobileMember.isPresent()) {
+            //수정할 member와 찾은 member id가 다를 때 -> Exception 발생
+            if (!memberId.equals(emailMember.get().getId()) || !memberId.equals(mobileMember.get().getId())) {
+                throw new CustomException(DUPLICATED_MEMBER);
+            }
+        }*/
     }
 }

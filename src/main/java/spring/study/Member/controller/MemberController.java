@@ -51,7 +51,7 @@ public class MemberController {
      * @param dto
      * @return
      */
-    @PostMapping("/new")
+    @PostMapping("/members/new")
     public ResponseEntity join(@RequestBody @Valid MemberRequestJoinDTO dto) {
 
         log.info("[join - Controller] dto = {}", dto);
