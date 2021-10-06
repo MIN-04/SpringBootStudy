@@ -28,6 +28,7 @@ public class MemberService {
 
     /**
      * 회원 가입
+     * 21.10.06 수정
      */
     public Member join(MemberCommand command) {
         log.info("[join - Service] command = {}", command);
