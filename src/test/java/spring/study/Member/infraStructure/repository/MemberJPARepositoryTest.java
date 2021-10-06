@@ -140,13 +140,6 @@ class MemberJPARepositoryTest {
 
         int dataSize = members.getContent().size();
         assertThat(dataSize <= pageCount).isTrue();
-
-//        assertThat(memberList).usingRecursiveComparison()(member, member2);
-        //https://tecoble.techcourse.co.kr/post/2020-11-03-assertJ_methods/
-        // containsExactly : 순서를 포함해서 정확히 일치
-        // assertThat(memberList).containsExactly(member, member2);
-        // assertThat(memberList).contains(member, member2);
-
     }
 
     @Test
