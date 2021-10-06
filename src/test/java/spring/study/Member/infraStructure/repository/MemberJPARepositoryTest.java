@@ -60,6 +60,36 @@ class MemberJPARepositoryTest {
         assertThat(result).usingRecursiveComparison().isEqualTo(member); //객체 안에 있는 객체 비교
     }
 
+    @Test
+    @DisplayName("회원 수정")
+    void modify() {
+        //given
+        Member saveMember = memberRepository.save(member);
+
+        //변경할 정보
+        Member updateMember = Member.builder()
+                .id(saveMember.getId())
+                .email("hongUpdate@naver.com")
+                .memberBasicInfo(MemberBasicInfo.builder()
+                        .password("abcd1!")
+                        .name("홍동길")
+                        .mobileNum("010-1111-1113")
+                        .gender("F")
+                        .birth("001122")
+                        .build())
+                .memberAddressInfo(MemberAddressInfo.builder()
+                        .address("Seoul")
+                        .build())
+                .build();
+
+        //when
+        Member updateResult = memberRepository.save(updateMember);
+
+        //then
+        assertThat(updateResult.getId()).isEqualTo(saveMember.getId());
+        assertThat(updateResult).usingRecursiveComparison().isEqualTo(updateMember);
+    }
+
     @DisplayName("이메일 또는 전화번호 중복 찾기")
     @ParameterizedTest(name = "{index}: {2}")
     @MethodSource("invalidParameters")
