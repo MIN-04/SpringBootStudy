@@ -1,6 +1,7 @@
 package spring.study.Member.controller.validations;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
@@ -28,7 +29,7 @@ public @interface MobileNumValidation {
         public boolean isValid(String mobileNum, ConstraintValidatorContext context) {
             log.info("[MobileNumCustomValidation - isValid] mobileNum = {}", mobileNum);
 
-            if(mobileNum.isBlank()) {
+            if(StringUtils.isBlank(mobileNum)) {
                 addMsg(context, BLANK_VALIDATE.getValidationMsg());
                 return false;
             }

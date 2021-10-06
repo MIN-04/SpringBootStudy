@@ -2,6 +2,7 @@ package spring.study.Member.controller.validations;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
@@ -30,7 +31,7 @@ public @interface NameValidation {
         public boolean isValid(String name, ConstraintValidatorContext context) {
             log.info("[NameCustomValidation - isValid] name = {}", name);
 
-            if(name.isBlank()){
+            if(StringUtils.isBlank(name)){
                 addMsg(context, BLANK_VALIDATE.getValidationMsg());
                 return false;
             }

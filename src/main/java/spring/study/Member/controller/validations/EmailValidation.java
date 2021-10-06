@@ -1,6 +1,7 @@
 package spring.study.Member.controller.validations;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
@@ -29,7 +30,7 @@ public @interface EmailValidation {
         public boolean isValid(String email, ConstraintValidatorContext context) {
             log.info("[EmailCustomValidation - isValid] email = {}", email);
 
-            if(email.isBlank()) {
+            if(StringUtils.isBlank(email)) {
                 addMsg(context, BLANK_VALIDATE.getValidationMsg());
                 return false;
             }
