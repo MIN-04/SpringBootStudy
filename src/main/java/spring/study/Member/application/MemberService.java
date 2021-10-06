@@ -11,6 +11,7 @@ import spring.study.Member.domain.services.MemberRepository;
 import spring.study.Member.infraStructure.repository.MemberJPARepository;
 import spring.study.common.exceptions.CustomException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static spring.study.common.enums.ErrorCode.*;
@@ -53,6 +54,7 @@ public class MemberService {
 
     /**
      * 회원 수정
+     * 21.10.05 수정
      */
     public Member modify(MemberCommand command) {
         log.info("[modify - Service] command = {}", command);
@@ -72,18 +74,30 @@ public class MemberService {
         }
 
         //수정할 이메일, 전화번호가 다른 유저와 중복인지 확인 -> 수정할 Member Id와 찾은 Member Id 비교
+        String mobileNum = member.getMemberBasicInfo().getMobileNum(); //member의 mobileNum
+        List<Member> members = memberRepository.findMembersByEmailOrMemberBasicInfo_MobileNum(member.getEmail(), mobileNum);
+
+        Long id = member.getId();
+
+        if(!members.isEmpty()) {
+            for (Member mem : members) {
+                if (!id.equals(mem.getId())) {
+                    throw new CustomException(DUPLICATED_MEMBER);
+                }
+            }
+        }
+
         //email 중복 찾기
-        Optional<Member> emailMember = memberRepository.findByEmail(member.getEmail());
-        log.info("[modify - Service] emailMember = {}", emailMember);
+        //Optional<Member> emailMember = memberRepository.findByEmail(member.getEmail());
+        //log.info("[modify - Service] emailMember = {}", emailMember);
 
         //mobileNum 중복 찾기
-        String mobileNum = member.getMemberBasicInfo().getMobileNum(); //member의 mobileNum
-        Optional<Member> mobileMember = memberRepository.findIdByMemberBasicInfo_MobileNum(mobileNum);
-        log.info("[modify - Service] mobileMember = {}", mobileMember);
+        //String mobileNum = member.getMemberBasicInfo().getMobileNum(); //member의 mobileNum
+        //Optional<Member> mobileMember = memberRepository.findIdByMemberBasicInfo_MobileNum(mobileNum);
+        //log.info("[modify - Service] mobileMember = {}", mobileMember);
 
         //수정할 Member Id와 찾은 Member Id 비교할 메서드
-        findDuplicatedMember(member.getId(), emailMember, mobileMember);
-
+        //findDuplicatedMember(member.getId(), emailMember, mobileMember);
 
         //회원 수정
         return memberRepository.save(member);
@@ -91,6 +105,7 @@ public class MemberService {
 
     /**
      * 회원 탈퇴
+     * 21.10.05 수정
      */
     public void delete(Long id) {
 
