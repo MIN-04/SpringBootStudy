@@ -9,10 +9,8 @@ import java.util.Optional;
 
 public interface MemberJPARepository extends MemberRepository, JpaRepository<Member, Long> {
 
-    //이메일, 전화번호 중복체크
-    Optional<Member> findMemberByEmailOrMemberBasicInfo_MobileNum(String email, String mobileNum);
-
-    List<Member> findMembersByEmailOrMemberBasicInfo_MobileNum(String email, String mobileNum);
+    //이메일, 전화번호가 같은 Member 찾기
+    List<Member> findByEmailOrMemberBasicInfo_MobileNum(String email, String mobileNum);
 
     //이메일 중복체크 (modify에 사용된다.)
     //Optional<Member> findByEmail(String email);

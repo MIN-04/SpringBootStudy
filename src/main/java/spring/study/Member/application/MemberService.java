@@ -41,11 +41,11 @@ public class MemberService {
         log.info("[join - Service] member = {}", member);
 
         //아이디 중복체크 (이메일과 번호)
-        memberRepository.findMemberByEmailOrMemberBasicInfo_MobileNum(member.getEmail(),
-                member.getMemberBasicInfo().getMobileNum())
-                .ifPresent(m -> {
-                    throw new CustomException(DUPLICATED_MEMBER);
-                });
+        List<Member> memberList = memberRepository.findByEmailOrMemberBasicInfo_MobileNum(member.getEmail(),
+                member.getMemberBasicInfo().getMobileNum());
+        
+        //중복된 회원이 있으면 Exception 발생
+        if (!memberList.isEmpty()) throw new CustomException(DUPLICATED_MEMBER);
 
         //회원 저장
         return memberRepository.save(member);
@@ -72,9 +72,11 @@ public class MemberService {
             throw new CustomException(NOT_EXIST_MEMBER);
         }
 
-        //수정할 이메일, 전화번호가 다른 유저와 중복인지 확인 -> 수정할 Member Id와 찾은 Member Id 비교
-        String mobileNum = member.getMemberBasicInfo().getMobileNum(); //member의 mobileNum
-        List<Member> memberList = memberRepository.findMembersByEmailOrMemberBasicInfo_MobileNum(member.getEmail(), mobileNum);
+        //수정할 이메일, 전화번호가 다른 멤버와 중복인지 확인 -> 수정할 Member Id와 찾은 Member Id 비교
+        //member의 mobileNum
+        String mobileNum = member.getMemberBasicInfo().getMobileNum(); 
+        //중복된 멤버 찾기
+        List<Member> memberList = memberRepository.findByEmailOrMemberBasicInfo_MobileNum(member.getEmail(), mobileNum);
         log.info("[modify - Service] memberList = {}", memberList);
 
         Long id = member.getId();
