@@ -7,7 +7,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.commands.MemberCommand;
-import spring.study.Member.domain.services.MemberRepository;
 import spring.study.Member.infraStructure.repository.MemberJPARepository;
 import spring.study.common.exceptions.CustomException;
 
@@ -54,7 +53,7 @@ public class MemberService {
 
     /**
      * 회원 수정
-     * 21.10.05 수정
+     * 21.10.06 수정
      */
     public Member modify(MemberCommand command) {
         log.info("[modify - Service] command = {}", command);
@@ -75,12 +74,12 @@ public class MemberService {
 
         //수정할 이메일, 전화번호가 다른 유저와 중복인지 확인 -> 수정할 Member Id와 찾은 Member Id 비교
         String mobileNum = member.getMemberBasicInfo().getMobileNum(); //member의 mobileNum
-        List<Member> members = memberRepository.findMembersByEmailOrMemberBasicInfo_MobileNum(member.getEmail(), mobileNum);
+        List<Member> memberList = memberRepository.findMembersByEmailOrMemberBasicInfo_MobileNum(member.getEmail(), mobileNum);
+        log.info("[modify - Service] memberList = {}", memberList);
 
         Long id = member.getId();
-
-        if(!members.isEmpty()) {
-            for (Member mem : members) {
+        if(!memberList.isEmpty()) {
+            for (Member mem : memberList) {
                 if (!id.equals(mem.getId())) {
                     throw new CustomException(DUPLICATED_MEMBER);
                 }
