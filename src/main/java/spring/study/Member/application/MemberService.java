@@ -79,13 +79,13 @@ public class MemberService {
         List<Member> memberList = memberRepository.findByEmailOrMemberBasicInfo_MobileNum(member.getEmail(), mobileNum);
         log.info("[modify - Service] memberList = {}", memberList);
 
-        Long id = member.getId();
+        Long memberId = member.getId();
         if(!memberList.isEmpty()) {
-            for (Member mem : memberList) {
-                if (!id.equals(mem.getId())) {
+            memberList.forEach(m -> {
+                if (!memberId.equals(m.getId())) {
                     throw new CustomException(DUPLICATED_MEMBER);
                 }
-            }
+            });
         }
 
         //email 중복 찾기
