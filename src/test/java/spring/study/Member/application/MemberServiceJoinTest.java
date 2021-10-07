@@ -10,8 +10,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
@@ -28,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
 import static spring.study.common.enums.ErrorCode.DUPLICATED_MEMBER;
 
 @ExtendWith(MockitoExtension.class)
