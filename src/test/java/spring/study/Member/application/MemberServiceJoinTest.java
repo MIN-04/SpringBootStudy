@@ -15,6 +15,7 @@ import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
 import spring.study.Member.infraStructure.repository.MemberJPARepository;
+import spring.study.common.enums.ErrorCode;
 import spring.study.common.exceptions.CustomException;
 
 import java.util.ArrayList;
@@ -100,7 +101,10 @@ class MemberServiceJoinTest {
 
         //when
         //then
-        assertThrows(CustomException.class, () -> memberService.join(memberCommand));
+        CustomException exception = assertThrows(CustomException.class,
+                () -> memberService.join(memberCommand));
+        ErrorCode errorCode = exception.getErrorCode();
+        assertThat(errorCode).isEqualTo(DUPLICATED_MEMBER);
     }
 
     @Test
@@ -114,7 +118,10 @@ class MemberServiceJoinTest {
 
         //when
         //then
-        assertThrows(CustomException.class, () -> memberService.join(memberCommand));
+        CustomException exception = assertThrows(CustomException.class,
+                () -> memberService.join(memberCommand));
+        ErrorCode errorCode = exception.getErrorCode();
+        assertThat(errorCode).isEqualTo(DUPLICATED_MEMBER);
 
     }
 
@@ -129,7 +136,10 @@ class MemberServiceJoinTest {
 
         //when
         //then
-        assertThrows(CustomException.class, () -> memberService.join(memberCommand));
+        CustomException exception = assertThrows(CustomException.class,
+                () -> memberService.join(memberCommand));
+        ErrorCode errorCode = exception.getErrorCode();
+        assertThat(errorCode).isEqualTo(DUPLICATED_MEMBER);
     }
 
     /**
@@ -138,8 +148,8 @@ class MemberServiceJoinTest {
      * expected: <spring.study.common.exceptions.CustomException>
      * but was: <org.mockito.exceptions.misusing.PotentialStubbingProblem>
      * given을 사용하여 동일한 메서드를 여러번 호출하면 발생 (동일한 메서드를 여러번 스텁해서 발생)
-     * 이유 : 엄격한 스텁 규칙 때문
-     * 이걸 느슨하게 해줄려면 클래스에 @MockitoSettings(strictness = Strictness.LENIENT) 붙이기
+     * 이유 : 엄격한 스텁 규칙 때문 - https://www.javadoc.io/doc/org.mockito/mockito-core/2.6.5/org/mockito/exceptions/misusing/PotentialStubbingProblem.html
+     * 이걸 느슨하게 해줄려면 클래스에 @MockitoSettings(strictness = Strictness.LENIENT) 붙이기 https://stackoverflow.com/questions/52139619/simulation-of-service-using-mockito-2-leads-to-stubbing-error
      * 하지만 이걸 붙여주면
      * Expected spring.study.common.exceptions.CustomException to be thrown, but nothing was thrown.
      * 이런식으로 오류 발생
