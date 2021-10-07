@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 //@DataJpaTest
 @SpringBootTest
 @Transactional
+@DisplayName("[Repository] Jpa Repository 테스트")
 class MemberJPARepositoryTest {
     @Autowired
     MemberJPARepository memberRepository;
@@ -90,6 +91,8 @@ class MemberJPARepositoryTest {
         assertThat(updateResult).usingRecursiveComparison().isEqualTo(updateMember);
     }
 
+    //21.10.01 피드백 (10.06 수정 완료)
+    //테스트에서 조건이 다 다른데 같은 동작을 반복해야 할 경우 → @ParaeterizedTest 사용
     @DisplayName("이메일 또는 전화번호 중복 찾기")
     @ParameterizedTest(name = "{index}: {2}")
     @MethodSource("invalidParameters")
