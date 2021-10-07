@@ -1,6 +1,7 @@
 package spring.study.Member.application;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,8 +13,12 @@ import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.domain.services.MemberRepository;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
+import spring.study.Member.infraStructure.repository.MemberJPARepository;
+import spring.study.common.enums.ErrorCode;
 import spring.study.common.exceptions.CustomException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,37 +28,40 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static spring.study.common.enums.ErrorCode.DUPLICATED_MEMBER;
+import static spring.study.common.enums.ErrorCode.NOT_EXIST_MEMBER;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("[Service] 회원 수정 Test")
 class MemberServiceModifyTest {
 
     @InjectMocks
     MemberService memberService;
 
     @Mock
-    MemberRepository memberRepository;
+    MemberJPARepository memberRepository;
 
     MemberBasicInfo memberBasicInfo = MemberBasicInfo.builder()
             .password("abcd1!")
             .name("홍길동")
             .mobileNum("010-1111-1111")
             .gender("F")
-            .birthday("001122")
+            .birth("001122")
             .build();
 
     MemberAddressInfo memberAddressInfo = MemberAddressInfo.builder()
             .address("Seoul")
             .build();
 
-    // MemberCommand
+    //MemberCommand (수정 전 정보)
     MemberCommand memberCommand = MemberCommand.builder()
             .email("hong@naver.com")
             .basicInfo(memberBasicInfo)
             .addressInfo(memberAddressInfo)
             .build();
 
-    // Member
+    //Member (수정 전)
     Member member = Member.builder()
+            .id(1L)
             .email("hong@naver.com")
             .memberBasicInfo(memberBasicInfo)
             .memberAddressInfo(memberAddressInfo)
@@ -61,33 +69,84 @@ class MemberServiceModifyTest {
 
     @Test
     @DisplayName("회원 수정 성공")
-    void joinSuccess() {
+    void modifySuccess() {
         //given
-        MemberCommand testCommand = MemberCommand.builder()
-                .email("hong@naver.com")
-                .basicInfo(MemberBasicInfo.builder()
-                        .password("abcd1!")
+        //수정 후 정보
+        Member updateMember = Member.builder()
+                .id(1L)
+                .email("hong1@naver.com")
+                .memberBasicInfo(MemberBasicInfo.builder()
+                        .password("abcde1!")
                         .name("홍길동1")
-                        .mobileNum("010-1111-2222")
-                        .gender("F")
-                        .birthday("001122")
+                        .mobileNum("010-1112-1112")
+                        .gender("M")
+                        .birth("001122")
+                        .build())
+                .memberAddressInfo(MemberAddressInfo.builder()
+                        .address("Seoul")
+                        .build())
+                .build();
+
+        //수정할 정보 command
+        MemberCommand updateCommand = MemberCommand.builder()
+                .id(1L)
+                .email("hong1@naver.com")
+                .basicInfo(MemberBasicInfo.builder()
+                        .password("abcde1!")
+                        .name("홍길동1")
+                        .mobileNum("010-1112-1112")
+                        .gender("M")
+                        .birth("001122")
                         .build())
                 .addressInfo(MemberAddressInfo.builder()
                         .address("Seoul")
                         .build())
                 .build();
 
-        given(memberRepository.save(any())).willReturn(member);
+        //수정할 회원이 있다.
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
+        //수정하면 member를 리턴한다.
+        given(memberRepository.save(any())).willReturn(updateMember);
 
 
         //then
         memberService.join(memberCommand);
-        Member result = memberService.modify(testCommand);
+        Member result = memberService.modify(updateCommand);
 
         //when
-        assertThat(result.getEmail()).isEqualTo(member.getEmail());
         assertThat(result).usingRecursiveComparison().isNotEqualTo(member);
     }
+
+    @Test
+    @DisplayName("회원 수정 실패 - 수정할 회원이 없을 때")
+    void notExistMember() {
+        //given
+        //수정할 정보 command
+        MemberCommand updateCommand = MemberCommand.builder()
+                .id(1L)
+                .email("hong1@naver.com")
+                .basicInfo(MemberBasicInfo.builder()
+                        .password("abcde1!")
+                        .name("홍길동1")
+                        .mobileNum("010-1112-1112")
+                        .gender("M")
+                        .birth("001122")
+                        .build())
+                .addressInfo(MemberAddressInfo.builder()
+                        .address("Seoul")
+                        .build())
+                .build();
+
+        given(memberRepository.findById(anyLong())).willThrow(new CustomException(NOT_EXIST_MEMBER));
+
+        //when
+        //then
+        CustomException exception = assertThrows(CustomException.class,
+                () -> memberService.modify(updateCommand));
+        ErrorCode errorCode = exception.getErrorCode();
+        assertThat(errorCode).isEqualTo(NOT_EXIST_MEMBER);
+    }
+
 
 
 }
