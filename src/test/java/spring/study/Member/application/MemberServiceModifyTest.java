@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -109,11 +110,12 @@ class MemberServiceModifyTest {
         given(memberRepository.save(any())).willReturn(updateMember);
 
 
-        //then
-        memberService.join(memberCommand);
+        //when
+        Member result1 = memberService.join(memberCommand);
+        System.out.println(result1.getId());
         Member result = memberService.modify(updateCommand);
 
-        //when
+        //then
         assertThat(result).usingRecursiveComparison().isNotEqualTo(member);
     }
 
@@ -147,6 +149,101 @@ class MemberServiceModifyTest {
         assertThat(errorCode).isEqualTo(NOT_EXIST_MEMBER);
     }
 
+    @Test
+    @DisplayName("회원 수정 실패 - 이메일 중복")
+    void failureMail() {
+        //given
+        MemberCommand command = MemberCommand.builder()
+                .id(2L)
+                .email("hong@naver.com")
+                .basicInfo(MemberBasicInfo.builder()
+                        .password("abcde1!")
+                        .name("홍길동")
+                        .mobileNum("010-1111-2222")
+                        .gender("M")
+                        .birth("001122")
+                        .build())
+                .addressInfo(MemberAddressInfo.builder()
+                        .address("Seoul")
+                        .build())
+                .build();
+        List<Member> list = new ArrayList<>();
+        list.add(member);
+        given(memberRepository.findById(command.getId())).willReturn(Optional.of(new Member()));
+        given(memberRepository
+                .findByEmailOrMemberBasicInfo_MobileNum(eq(command.getEmail()), anyString()))
+                .willReturn(list);
 
+        //when
+        //then
+        CustomException exception = assertThrows(CustomException.class,
+                () -> memberService.modify(command));
+        assertThat(exception.getErrorCode()).isEqualTo(DUPLICATED_MEMBER);
+    }
+
+    @Disabled
+    @Test
+    @DisplayName("회원 수정 실패 - 이메일 중복")
+    void duplicatedMail() {
+        //given
+        MemberCommand command = MemberCommand.builder()
+                .email("hong@naver.com")
+                .basicInfo(memberBasicInfo)
+                .addressInfo(memberAddressInfo)
+                .build();
+        //중복된 정보
+        MemberCommand dupliatedCommand = MemberCommand.builder()
+                .email("hong1@naver.com")
+                .basicInfo(MemberBasicInfo.builder()
+                        .password("abcde1!")
+                        .name("홍길동1")
+                        .mobileNum("010-1112-1112")
+                        .gender("M")
+                        .birth("001122")
+                        .build())
+                .addressInfo(MemberAddressInfo.builder()
+                        .address("Seoul")
+                        .build())
+                .build();
+        //수정할 정보 command
+        MemberCommand updateCommand = MemberCommand.builder()
+                .id(1L)
+                .email("hong1@naver.com")
+                .basicInfo(MemberBasicInfo.builder()
+                        .password("abcde1!")
+                        .name("홍길동1")
+                        .mobileNum("010-1112-1112")
+                        .gender("M")
+                        .birth("001122")
+                        .build())
+                .addressInfo(MemberAddressInfo.builder()
+                        .address("Seoul")
+                        .build())
+                .build();
+
+//        List<Member> memberList = new ArrayList<>();
+//        memberList.add(member);
+//        given(memberRepository
+//                .findByEmailOrMemberBasicInfo_MobileNum(eq(updateCommand.getEmail()), anyString()))
+//                .willReturn(memberList);
+//        given(memberList.get(0).getId().equals(updateCommand.getId()))
+//                .willThrow(new CustomException(DUPLICATED_MEMBER));
+//        given(memberRepository
+//                .findByEmailOrMemberBasicInfo_MobileNum(eq(updateCommand.getEmail()), anyString()))
+//                .willThrow(new CustomException(DUPLICATED_MEMBER));
+
+        //when
+        Member member1 = memberService.join(command); //수정할 정보와 같은 이메일을 가진 command
+        Member member2 = memberService.join(dupliatedCommand); //수정할 정보와 같은 이메일을 가진 command
+
+        System.out.println(member1.getId());
+        System.out.println(member2.getId());
+
+//        //then
+//        CustomException exception = assertThrows(CustomException.class,
+//                () -> memberService.modify(updateCommand));
+//        ErrorCode errorCode = exception.getErrorCode();
+//        assertThat(errorCode).isEqualTo(DUPLICATED_MEMBER);
+    }
 
 }
