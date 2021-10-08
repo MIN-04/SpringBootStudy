@@ -1,5 +1,7 @@
 package spring.study.Member.controller.validations;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -38,7 +40,7 @@ public @interface PasswordValidation {
         @Override
         public boolean isValid(String password, ConstraintValidatorContext context) {
 
-            if (password.isBlank()) {
+            if (StringUtils.isBlank(password)) {
                 addMsg(context, BLANK_VALIDATE.getValidationMsg());
                 return false;
             }

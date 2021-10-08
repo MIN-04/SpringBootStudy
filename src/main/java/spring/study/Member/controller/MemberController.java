@@ -51,7 +51,7 @@ public class MemberController {
      * @param dto
      * @return
      */
-    @PostMapping("/members/new")
+    @PostMapping(value = "/members/new", produces = "application/json; charset=utf8")
     public ResponseEntity join(@RequestBody @Valid MemberRequestJoinDTO dto) {
 
         log.info("[join - Controller] dto = {}", dto);
