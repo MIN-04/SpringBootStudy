@@ -106,16 +106,18 @@ class MemberServiceModifyTest {
 
         //수정할 회원이 있다.
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
+        //수정 정보중 다른 회원과 중복된 이메일, 전화번호가 없다.
+        given(memberRepository.findByEmailOrMemberBasicInfo_MobileNum(anyString(), anyString()))
+                .willReturn(new ArrayList<>());
         //수정하면 member를 리턴한다.
         given(memberRepository.save(any())).willReturn(updateMember);
 
 
         //when
-        Member result1 = memberService.join(memberCommand);
-        System.out.println(result1.getId());
         Member result = memberService.modify(updateCommand);
 
         //then
+        assertThat(result).usingRecursiveComparison().isEqualTo(updateMember);
         assertThat(result).usingRecursiveComparison().isNotEqualTo(member);
     }
 
