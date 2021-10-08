@@ -99,10 +99,10 @@ class MemberControllerJoinMockTest {
                 .andDo(print());
     }
 
-    @DisplayName("회원 가입 실패 - email validation 통과 X")
+    @DisplayName("회원 가입 실패 - 이메일 validation 통과 X")
     @ParameterizedTest(name = "{index}: {2}")
     @MethodSource("invalidEmailParameters")
-    void failureEmailNull(String email, ValidationMsgCode msgCode, String name) throws Exception {
+    void failureEmailNull(String email, ValidationMsgCode msgCode, String title) throws Exception {
         //given
         MemberRequestJoinDTO dto = MemberRequestJoinDTO.builder()
                 .email(email)
@@ -142,10 +142,10 @@ class MemberControllerJoinMockTest {
         );
     }
 
-    @DisplayName("회원 가입 실패 - password validation 통과 X")
+    @DisplayName("회원 가입 실패 - 패스워드 validation 통과 X")
     @ParameterizedTest(name = "{index}: {2}")
     @MethodSource("invalidPasswordParameters")
-    void failJoinValidationPassword(String password, ValidationMsgCode msgCode, String name) throws Exception {
+    void failJoinValidationPassword(String password, ValidationMsgCode msgCode, String title) throws Exception {
         //given
         MemberRequestJoinDTO dto = MemberRequestJoinDTO.builder()
                 .email("hong@naver.com")
@@ -185,5 +185,89 @@ class MemberControllerJoinMockTest {
         );
     }
 
+
+    @DisplayName("회원 가입 실패 - 이름 validation 통과 X")
+    @ParameterizedTest(name = "{index}: {2}")
+    @MethodSource("invalidNameParameters")
+    void failJoinValidationName(String name, ValidationMsgCode msgCode, String title) throws Exception {
+        //given
+        MemberRequestJoinDTO dto = MemberRequestJoinDTO.builder()
+                .email("hong@naver.com")
+                .password("pass1!")
+                .name(name)
+                .address("Seoul")
+                .mobileNum("010-1111-1111")
+                .gender("M")
+                .birth("001122")
+                .build();
+
+        ResponseMessage message = ResponseMessage.builder()
+                .httpStatus(FAIL_VALIDATE.getHttpStatus())
+                .message(FAIL_VALIDATE.getErrorMsg())
+                .detailMsg(msgCode.getValidationMsg())
+                .build();
+
+        //when
+        //then
+        mockMvc.perform(post("/member/members/new")
+                .accept(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(dto))
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(mapper.writeValueAsString(message)))
+                .andDo(print());
+    }
+
+    //name 파라미터
+    static Stream<Arguments> invalidNameParameters() {
+        return Stream.of(
+                Arguments.of(null, BLANK_VALIDATE, "name이 null일 때"),
+                Arguments.of(" ", BLANK_VALIDATE, "name이 빈칸일 때"),
+                Arguments.of("honggildong", NAME_NOT_MATCH, "name 형식이 안맞을 때")
+        );
+    }
+
+    @DisplayName("회원 가입 실패 - 전화번호 validation 통과 X")
+    @ParameterizedTest(name = "{index}: {2}")
+    @MethodSource("invalidMobileNumParameters")
+    void failJoinValidationMobileNum(String mobileNum, ValidationMsgCode msgCode, String title) throws Exception {
+        //given
+        MemberRequestJoinDTO dto = MemberRequestJoinDTO.builder()
+                .email("hong@naver.com")
+                .password("pass1!")
+                .name("홍길동")
+                .address("Seoul")
+                .mobileNum(mobileNum)
+                .gender("M")
+                .birth("001122")
+                .build();
+
+        ResponseMessage message = ResponseMessage.builder()
+                .httpStatus(FAIL_VALIDATE.getHttpStatus())
+                .message(FAIL_VALIDATE.getErrorMsg())
+                .detailMsg(msgCode.getValidationMsg())
+                .build();
+
+        //when
+        //then
+        mockMvc.perform(post("/member/members/new")
+                .accept(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(dto))
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(mapper.writeValueAsString(message)))
+                .andDo(print());
+    }
+
+    //mobileNum 파라미터
+    static Stream<Arguments> invalidMobileNumParameters() {
+        return Stream.of(
+                Arguments.of(null, BLANK_VALIDATE, "전화번호가 null일 때"),
+                Arguments.of(" ", BLANK_VALIDATE, "전화번호가 빈칸일 때"),
+                Arguments.of("010-1111-11", MOBILENUM_NOT_MATCH, "전화번호 길이가 짧을 때"),
+                Arguments.of("015-1111-1111", MOBILENUM_NOT_MATCH, "전화번호 형식(010등 외의 번호)이 안맞을 때"),
+                Arguments.of("01011111111", MOBILENUM_NOT_MATCH, "전화번호 형식(-)이 안맞을 때")
+        );
+    }
 
 }
