@@ -1,6 +1,5 @@
 package spring.study.Member.application;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +14,6 @@ import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
 import spring.study.Member.infraStructure.repository.MemberJPARepository;
-import spring.study.common.enums.ErrorCode;
 import spring.study.common.exceptions.CustomException;
 
 import java.util.ArrayList;
@@ -25,8 +23,10 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willReturn;
 import static spring.study.common.enums.ErrorCode.DUPLICATED_MEMBER;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,83 +91,28 @@ class MemberServiceJoinTest {
         assertThat(result).usingRecursiveComparison().isEqualTo(member);
     }
 
-    @Test
-    @DisplayName("회원 가입 실패 - 이메일 중복일 때")
-    void joinFailureEmail() {
-        //given
-        given(memberRepository
-                .findByEmailOrMemberBasicInfo_MobileNum(eq(member.getEmail()), anyString()))
-                .willThrow(new CustomException(DUPLICATED_MEMBER));
-
-        //when
-        //then
-        CustomException exception = assertThrows(CustomException.class,
-                () -> memberService.join(memberCommand));
-        ErrorCode errorCode = exception.getErrorCode();
-        assertThat(errorCode).isEqualTo(DUPLICATED_MEMBER);
-    }
-
-    @Test
-    @DisplayName("회원 가입 실패 - 전화번호 중복일 때")
-    void joinFailureMobileNum() {
-        //given
-        given(memberRepository
-                .findByEmailOrMemberBasicInfo_MobileNum(anyString(),
-                        eq(member.getMemberBasicInfo().getMobileNum())))
-                .willThrow(new CustomException(DUPLICATED_MEMBER));
-
-        //when
-        //then
-        CustomException exception = assertThrows(CustomException.class,
-                () -> memberService.join(memberCommand));
-        ErrorCode errorCode = exception.getErrorCode();
-        assertThat(errorCode).isEqualTo(DUPLICATED_MEMBER);
-
-    }
-
-    @Test
-    @DisplayName("회원 가입 실패 - 이메일, 전화번호 모두 중복일 때")
-    void joinFailureAll() {
-        //given
-        given(memberRepository
-                .findByEmailOrMemberBasicInfo_MobileNum(
-                        eq(member.getEmail()), eq(member.getMemberBasicInfo().getMobileNum())))
-                .willThrow(new CustomException(DUPLICATED_MEMBER));
-
-        //when
-        //then
-        CustomException exception = assertThrows(CustomException.class,
-                () -> memberService.join(memberCommand));
-        ErrorCode errorCode = exception.getErrorCode();
-        assertThat(errorCode).isEqualTo(DUPLICATED_MEMBER);
-    }
-
-    /**
-     * 중복된 메서드 사용이라 @ParameterizedTest 어노테이션을 사용했다.
-     * 그런데 예외 발생 : Unexpected exception type thrown ==>
-     * expected: <spring.study.common.exceptions.CustomException>
-     * but was: <org.mockito.exceptions.misusing.PotentialStubbingProblem>
-     * given을 사용하여 동일한 메서드를 여러번 호출하면 발생 (동일한 메서드를 여러번 스텁해서 발생)
-     * 이유 : 엄격한 스텁 규칙 때문 - https://www.javadoc.io/doc/org.mockito/mockito-core/2.6.5/org/mockito/exceptions/misusing/PotentialStubbingProblem.html
-     * 이걸 느슨하게 해줄려면 클래스에 @MockitoSettings(strictness = Strictness.LENIENT) 붙이기 https://stackoverflow.com/questions/52139619/simulation-of-service-using-mockito-2-leads-to-stubbing-error
-     * 하지만 이걸 붙여주면
-     * Expected spring.study.common.exceptions.CustomException to be thrown, but nothing was thrown.
-     * 이런식으로 오류 발생
-     * 해결 실패 -> 나중에 더 찾아보기
-     * */
-    @Disabled
     @DisplayName("회원가입 실패 - 이메일 또는 전화번호가 중복일 때")
     @ParameterizedTest(name = "{index}: {2}")
     @MethodSource("invalidParameters")
     void joinFailure(String email, String mobileNum, String testName) {
+
+        Member duplicatedMember = Member.builder()
+                .email(email)
+                .memberBasicInfo(MemberBasicInfo.builder()
+                        .mobileNum(mobileNum)
+                        .build())
+                .build();
+
+        List<Member> duplicatedList = new ArrayList<>();
+        duplicatedList.add(duplicatedMember);
+
         //given
-        given(memberRepository
-                .findByEmailOrMemberBasicInfo_MobileNum(email, mobileNum))
-                .willThrow(new CustomException(DUPLICATED_MEMBER));
-        //다른 방법 (성공)
-        //given(memberRepository
-        //        .findMemberByEmailOrMemberBasicInfo_MobileNum(eq(member.getEmail()), anyString()))
-        //        .willThrow(new CustomException(DUPLICATED_MEMBER));
+        willReturn(duplicatedList)
+                .willThrow(new CustomException(DUPLICATED_MEMBER))
+                .given(memberRepository).findByEmailOrMemberBasicInfo_MobileNum(
+                        member.getEmail(),
+                        member.getMemberBasicInfo().getMobileNum()
+        );
 
         //when
         //then
