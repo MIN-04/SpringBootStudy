@@ -1,5 +1,6 @@
 package spring.study.Member.application;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,41 +41,47 @@ class MemberServiceJoinTest {
     @Mock
     MemberJPARepository memberRepository;
 
-    MemberBasicInfo memberBasicInfo = MemberBasicInfo.builder()
-            .password("abcd1!")
-            .name("홍길동")
-            .mobileNum("010-1111-1111")
-            .gender("F")
-            .birth("001122")
-            .build();
-
-    MemberAddressInfo memberAddressInfo = MemberAddressInfo.builder()
-            .address("Seoul")
-            .build();
-
     // MemberCommand
-    MemberCommand memberCommand = MemberCommand.builder()
-            .email("hong@naver.com")
-            .basicInfo(memberBasicInfo)
-            .addressInfo(memberAddressInfo)
-            .build();
+    static MemberCommand memberCommand;
 
     // Member
-    Member member = Member.builder()
-            .id(1L)
-            .email("hong@naver.com")
-            .memberBasicInfo(memberBasicInfo)
-            .memberAddressInfo(memberAddressInfo)
-            .build();
+    static Member member;
+
+    @BeforeAll
+    static void setUp() {
+        MemberBasicInfo memberBasicInfo = MemberBasicInfo.builder()
+                .password("abcd1!")
+                .name("홍길동")
+                .mobileNum("010-1111-1111")
+                .gender("F")
+                .birth("001122")
+                .build();
+
+        MemberAddressInfo memberAddressInfo = MemberAddressInfo.builder()
+                .address("Seoul")
+                .build();
+
+        memberCommand = MemberCommand.builder()
+                .email("hong@naver.com")
+                .basicInfo(memberBasicInfo)
+                .addressInfo(memberAddressInfo)
+                .build();
+
+        member = Member.builder()
+                .id(1L)
+                .email("hong@naver.com")
+                .memberBasicInfo(memberBasicInfo)
+                .memberAddressInfo(memberAddressInfo)
+                .build();
+    }
 
     @Test
     @DisplayName("회원 가입 성공")
     void joinSuccess() {
         //given
-        //빈 List
-        List<Member> testList = new ArrayList<>();
-        given(memberRepository.findByEmailOrMemberBasicInfo_MobileNum(anyString(), anyString()))
-                .willReturn(testList);
+        //이메일과 번호가 중복된 회원은 없다.
+        willReturn(new ArrayList<>()).given(memberRepository)
+                .findByEmailOrMemberBasicInfo_MobileNum(anyString(), anyString());
         given(memberRepository.save(any())).willReturn(member);
 
         //아래는 실패 코드 (왤까?)
@@ -96,6 +103,8 @@ class MemberServiceJoinTest {
     @MethodSource("invalidParameters")
     void joinFailure(String email, String mobileNum, String testName) {
 
+        //given
+        //중복된 회원
         Member duplicatedMember = Member.builder()
                 .email(email)
                 .memberBasicInfo(MemberBasicInfo.builder()
@@ -106,7 +115,6 @@ class MemberServiceJoinTest {
         List<Member> duplicatedList = new ArrayList<>();
         duplicatedList.add(duplicatedMember);
 
-        //given
         willReturn(duplicatedList)
                 .willThrow(new CustomException(DUPLICATED_MEMBER))
                 .given(memberRepository).findByEmailOrMemberBasicInfo_MobileNum(
