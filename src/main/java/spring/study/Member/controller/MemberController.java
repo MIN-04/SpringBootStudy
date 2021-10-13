@@ -112,7 +112,7 @@ public class MemberController {
     //url에 delete를 사용하지 않는다.
     @DeleteMapping("/members/{id}")
     @Validated
-    public ResponseEntity delete(@PathVariable @NotNull Long id) {
+    public ResponseEntity delete(@PathVariable Long id) {
 
         log.info("[delete - Controller] id = {}", id);
 
