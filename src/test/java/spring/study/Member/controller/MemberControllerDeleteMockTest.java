@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -12,8 +13,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import spring.study.Member.application.MemberService;
+import spring.study.common.exceptions.CustomException;
 import spring.study.common.responses.ResponseMessage;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -22,10 +26,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static spring.study.common.enums.ErrorCode.FAIL_VALIDATE;
+import static spring.study.common.enums.ErrorCode.NOT_EXIST_MEMBER;
 import static spring.study.common.enums.SuccessCode.SUCCESS_DELETE_MEMBER;
 
 @WebMvcTest(MemberController.class)
 @ExtendWith(MockitoExtension.class)
+@DisplayName("[Controller] 회원 탈퇴 Test")
 class MemberControllerDeleteMockTest {
 
     @MockBean
@@ -47,6 +53,8 @@ class MemberControllerDeleteMockTest {
                 .message(SUCCESS_DELETE_MEMBER.getSuccessMsg())
                 .build();
 
+        willDoNothing().given(memberService).delete(anyLong());
+
         //when
         //then
         mockMvc.perform(delete("/member/members/{id}", id)
@@ -54,47 +62,34 @@ class MemberControllerDeleteMockTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(mapper.writeValueAsString(message)))
                 .andDo(print());
+
         verify(memberService, times(1)).delete(1L);
     }
 
-    @Disabled
     @Test
-    @DisplayName("회원 탈퇴 실패 - validation 통과 X")
-    void failDeleteValidation() throws Exception {
+    @DisplayName("회원 탈퇴 실패 - 삭제할 회원이 없을 때")
+    void notFound() throws Exception {
         //given
-        //case 1. email이 빈칸일 때
-        String deleteNull = "";
-        ResponseMessage messageNull = ResponseMessage.builder()
-                .httpStatus(FAIL_VALIDATE.getHttpStatus())
-                .message(FAIL_VALIDATE.getErrorMsg())
-//                .detailMsg(BLANK_VALIDATE.getValidationMsg())
+        Long id = 1L;
+        //응답 메시지
+        ResponseMessage message = ResponseMessage.builder()
+                .httpStatus(NOT_EXIST_MEMBER.getHttpStatus())
+                .message(NOT_EXIST_MEMBER.getErrorMsg())
                 .build();
 
-        //case 2. email의 형식이 안맞을 때
-        String deleteMissMatch = "ddd";
-        ResponseMessage messageMissMatch = ResponseMessage.builder()
-                .httpStatus(FAIL_VALIDATE.getHttpStatus())
-                .message(FAIL_VALIDATE.getErrorMsg())
-//                .detailMsg(EMAIL_NOT_MATCH.getValidationMsg())
-                .build();
+        willThrow(new CustomException(NOT_EXIST_MEMBER))
+                .given(memberService).delete(anyLong());
 
         //when
         //then
-        //case 1. email이 빈칸일 때
-        mockMvc.perform(get("/member/delete/{email}", deleteNull)
-        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/member/members/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string(mapper.writeValueAsString(messageNull)))
+                .andExpect(content().string(mapper.writeValueAsString(message)))
                 .andDo(print());
 
-//        //case 2. email의 형식이 안맞을 때
-//        mockMvc.perform(get("/member/delete/{email}", deleteMissMatch)
-//        .accept(MediaType.APPLICATION_JSON)
-//        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(content().string(mapper.writeValueAsString(messageMissMatch)))
-//                .andDo(print());
-
+        verify(memberService, times(1)).delete(1L);
     }
+
 
 }
