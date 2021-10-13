@@ -19,6 +19,7 @@ import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
 import spring.study.common.enums.ValidationMsgCode;
+import spring.study.common.exceptions.CustomException;
 import spring.study.common.responses.ResponseMessage;
 
 import java.util.stream.Stream;
@@ -30,6 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static spring.study.common.enums.ErrorCode.DUPLICATED_MEMBER;
 import static spring.study.common.enums.ErrorCode.FAIL_VALIDATE;
 import static spring.study.common.enums.SuccessCode.SUCCESS_JOIN_MEMBER;
 import static spring.study.common.enums.ValidationMsgCode.*;
@@ -50,6 +52,8 @@ class MemberControllerJoinMockTest {
     //회원가입 성공시 return 되는 결과값
     static Member member;
 
+    static MemberRequestJoinDTO dto;
+
     @BeforeAll
     static void setUp() {
         member = Member.builder()
@@ -66,15 +70,8 @@ class MemberControllerJoinMockTest {
                         .address("Seoul")
                         .build())
                 .build();
-    }
 
-    @Test
-    @DisplayName("회원 가입 성공")
-    void successJoin() throws Exception {
-
-        //given
-        //DTO
-        MemberRequestJoinDTO dto = MemberRequestJoinDTO.builder()
+        dto = MemberRequestJoinDTO.builder()
                 .email("hong@naver.com")
                 .password("hong1!")
                 .name("홍길동")
@@ -83,7 +80,13 @@ class MemberControllerJoinMockTest {
                 .gender("M")
                 .birth("001122")
                 .build();
+    }
 
+    @Test
+    @DisplayName("회원 가입 성공")
+    void successJoin() throws Exception {
+
+        //given
         //return response message
         ResponseMessage message = ResponseMessage.builder()
                 .httpStatus(SUCCESS_JOIN_MEMBER.getHttpStatus())
@@ -104,12 +107,37 @@ class MemberControllerJoinMockTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("회원 가입 실패 - 이메일 또는 전화번호 중복일 때")
+    void duplicatedEmail() throws Exception {
+        //given
+        //return response message
+        ResponseMessage message = ResponseMessage.builder()
+                .httpStatus(DUPLICATED_MEMBER.getHttpStatus())
+                .message(DUPLICATED_MEMBER.getErrorMsg())
+                .build();
+
+        given(memberService.join(any())).willThrow(new CustomException(DUPLICATED_MEMBER));
+
+        //when
+        //then
+        mockMvc.perform(post("/member/members/new")
+                .accept(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(dto))
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(content().string(mapper.writeValueAsString(message)))
+                .andDo(print());
+
+    }
+
+
     @DisplayName("회원 가입 실패 - validation 통과 X")
     @ParameterizedTest(name = "{index}: {5}")
     @MethodSource("invalidParameters")
     void failureValidation(String email, String password, String name, String mobile, ValidationMsgCode msgCode, String title) throws Exception {
         //given
-        MemberRequestJoinDTO dto = MemberRequestJoinDTO.builder()
+        MemberRequestJoinDTO dtoVal = MemberRequestJoinDTO.builder()
                 .email(email)
                 .password(password)
                 .name(name)
@@ -130,7 +158,7 @@ class MemberControllerJoinMockTest {
         //then
         mockMvc.perform(post("/member/members/new")
                 .accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(dto))
+                .content(mapper.writeValueAsString(dtoVal))
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(mapper.writeValueAsString(message)))
