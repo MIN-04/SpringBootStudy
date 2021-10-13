@@ -107,7 +107,7 @@ public class MemberService {
 
     /**
      * 회원 탈퇴
-     * 21.10.05 수정
+     * 21.10.13 수정
      */
     public void delete(Long id) {
 
@@ -120,12 +120,6 @@ public class MemberService {
 
         //회원 삭제
         memberRepository.deleteById(id);
-
-        //회원 삭제가 되었는지 확인 (회원 찾기)
-        memberRepository.findById(id)
-                .ifPresent(m -> {
-                    throw new CustomException(FAIL_DELETE_MEMBER);
-                });
     }
 
     /**
