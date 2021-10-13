@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import spring.study.Member.controller.validations.EmailValidation;
-import spring.study.Member.controller.validations.MobileNumValidation;
-import spring.study.Member.controller.validations.NameValidation;
-import spring.study.Member.controller.validations.PasswordValidation;
+import spring.study.Member.controller.validations.*;
 
 import javax.validation.constraints.NotNull;
 
@@ -17,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class MemberRequestModifyDTO {
 
-    @NotNull
+    @IdValidation
     private Long id; //id (회원 PK)
     //@NotBlank
     @EmailValidation
