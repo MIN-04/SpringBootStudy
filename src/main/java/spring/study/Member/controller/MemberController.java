@@ -16,7 +16,6 @@ import spring.study.common.enums.SuccessCode;
 import spring.study.common.responses.ResponseMessage;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 import static spring.study.common.enums.SuccessCode.*;
@@ -111,7 +110,6 @@ public class MemberController {
     //회원 삭제 같은 경우 @GetMapping 말고 @DeleteMapping 사용 → HTTP delete 메서드 사용
     //url에 delete를 사용하지 않는다.
     @DeleteMapping("/members/{id}")
-    @Validated
     public ResponseEntity delete(@PathVariable Long id) {
 
         log.info("[delete - Controller] id = {}", id);
