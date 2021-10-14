@@ -1,6 +1,8 @@
 package spring.study.common.responses;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
@@ -11,15 +13,4 @@ public class ResponseMessage {
     private final String message; //ErrorCode message
     private final String detailMsg; //ValidationMsgCode message
     private final Object resultData;
-
-//    public ResponseMessage(HttpStatus status, String message) {
-//        this.httpStatus = status;
-//        this.message = message;
-//    }
-//
-//    public ResponseMessage(HttpStatus status, String message, Object resultData) {
-//        this.httpStatus = status;
-//        this.message = message;
-//        this.resultData = resultData;
-//    }
 }

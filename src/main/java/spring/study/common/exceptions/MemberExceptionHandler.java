@@ -1,16 +1,11 @@
 package spring.study.common.exceptions;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -18,6 +13,7 @@ import spring.study.common.enums.ErrorCode;
 import spring.study.common.responses.ResponseMessage;
 
 import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 
 import static spring.study.common.enums.ErrorCode.FAIL_VALIDATE;
 
@@ -26,7 +22,6 @@ import static spring.study.common.enums.ErrorCode.FAIL_VALIDATE;
 public class MemberExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ResponseMessage setResponseMessage(ErrorCode errorCode, String detailMsg) {
-//        return new ResponseMessage(errorCode.getHttpStatus(), errorCode.getErrorMsg(), detailMsg);
         return ResponseMessage.builder()
                 .httpStatus(errorCode.getHttpStatus())
                 .message(errorCode.getErrorMsg())
@@ -35,7 +30,7 @@ public class MemberExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * validation 검사 예외
+     * @RequestBody validation 검사 예외처리
      * @return
      */
     @Override
@@ -51,13 +46,6 @@ public class MemberExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(rm, HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(ConstraintViolationException.class)
-//    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException e) {
-//
-//        ResponseMessage rm = setResponseMessage(FAIL_VALIDATE);
-//        return new ResponseEntity<>(rm, HttpStatus.BAD_REQUEST);
-//    }
-
     /**
      * 회원 중복 예외
      * @return
@@ -71,7 +59,34 @@ public class MemberExceptionHandler extends ResponseEntityExceptionHandler {
 
         ResponseMessage rm = setResponseMessage(errorCode, null);
 
-        return new ResponseEntity<>(rm, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(rm, errorCode.getHttpStatus());
+
+    }
+
+    /**
+     * @PathVariable validation 검사 예외처리
+     * @return
+     */
+    //참고
+    //https://kapentaz.github.io/spring/Spring-Boo-Bean-Validation-%EC%A0%9C%EB%8C%80%EB%A1%9C-%EC%95%8C%EA%B3%A0-%EC%93%B0%EC%9E%90/#
+//    @ExceptionHandler(ConstraintViolationException.class)
+//    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException e) {
+//
+//        System.out.println(e.getConstraintViolations());
+//        ResponseMessage rm = setResponseMessage(FAIL_VALIDATE, null);
+//        return new ResponseEntity<>(rm, HttpStatus.BAD_REQUEST);
+////        return new ResponseEntity<>(e., HttpStatus.BAD_REQUEST);
+//    }
+
+//    @ExceptionHandler(ValidationException.class)
+//    protected String handleCustomException(ValidationException e) {
+//        log.error("handleCustomException throw ValidationException : {}", e.getMessage());
+//        return e.getMessage();
+//    }
+
+    /**
+     * return 모양
+     */
 //        return new ResponseEntity<>(errorCode.getErrorMsg(), errorCode.getHttpStatus());
 //        return new ResponseEntity<>(errorCode.getErrorMsg(), errorCode.getHttpStatus());
 //        return ResponseEntity
@@ -86,5 +101,4 @@ public class MemberExceptionHandler extends ResponseEntityExceptionHandler {
 //                        .build()
 //                );
 //        return ErrorResponse.toResponseEntity(e.getErrorCode());
-    }
 }
