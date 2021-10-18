@@ -83,7 +83,7 @@ class MemberControllerFindAllMockTest {
     @DisplayName("회원 목록 조회 성공")
     void successFindAll() throws Exception {
         //given
-        int page = 1;
+        int page = 0;
         int pageCount = 10;
 
         Page<Member> testPage = new PageImpl<>(Arrays.asList(member1, member2));
@@ -94,7 +94,7 @@ class MemberControllerFindAllMockTest {
                 .resultData(testPage.getContent())
                 .build();
 
-        willReturn(testPage).given(memberService).findAll(page-1, pageCount);
+        willReturn(testPage).given(memberService).findAll(page, pageCount);
 
         //when
         //then
