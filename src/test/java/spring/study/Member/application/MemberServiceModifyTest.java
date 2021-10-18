@@ -24,8 +24,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willReturn;
@@ -120,7 +119,7 @@ class MemberServiceModifyTest {
         Member result = memberService.modify(command);
 
         //then
-        assertTrue(result.getId().equals(command.getId()));
+        assertEquals(result.getId(), command.getId());
         assertThat(result).usingRecursiveComparison().isEqualTo(updateMember);
         assertThat(result).usingRecursiveComparison().isNotEqualTo(oldMember);
     }
@@ -129,9 +128,7 @@ class MemberServiceModifyTest {
     @DisplayName("회원 수정 실패 - 수정할 회원이 없을 때")
     void notExistMember() {
         //given
-        willReturn(Optional.empty())
-                .willThrow(new CustomException(NOT_EXIST_MEMBER))
-                .given(memberRepository).findById(anyLong());
+        willReturn(Optional.empty()).given(memberRepository).findById(anyLong());
 
         //when
         //then
@@ -160,7 +157,6 @@ class MemberServiceModifyTest {
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(new Member()));
 
         willReturn(duplicatedList)
-                .willThrow(new CustomException(DUPLICATED_MEMBER))
                 .given(memberRepository).findByEmailOrMemberBasicInfo_MobileNum(
                         updateMember.getEmail(),
                         updateMember.getMemberBasicInfo().getMobileNum()
