@@ -7,7 +7,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import spring.study.Product.domain.aggregates.Product;
 import spring.study.Product.domain.commands.ProductCommand;
-import spring.study.Product.domain.valueObjects.ProductBasicInfo;
 import spring.study.Product.infraStructure.repository.ProductJpaRepository;
 
 @Slf4j
