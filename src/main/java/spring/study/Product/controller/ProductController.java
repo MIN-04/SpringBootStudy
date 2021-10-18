@@ -46,14 +46,14 @@ public class ProductController {
      * 상품 등록
      */
     @PostMapping(PRODUCT_NEW)
-    public ResponseEntity<ResponseMessage> save(ProductRequestDTO dto) {
-        log.info("Product [Controller - save] dto = {}", dto);
+    public ResponseEntity<ResponseMessage> save(@RequestBody ProductRequestDTO dto) {
+        log.info("Product [Controller - save] dto = {}", dto.toString());
 
         ProductCommand command = mapper.toCommand(dto);
 
         //상품 등록
         Product result = productService.save(command);
-        log.info("Product [Controller - save] result = {}", result);
+        log.info("Product [Controller - save] result = {}", result.toString());
 
         ResponseMessage rm = setResponseMessage(SUCCESS_SAVE_PRODUCT, result);
 
