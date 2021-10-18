@@ -15,6 +15,7 @@ import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
 import spring.study.Member.infraStructure.repository.MemberJPARepository;
+import spring.study.common.enums.ErrorCode;
 import spring.study.common.exceptions.CustomException;
 
 import java.util.ArrayList;
@@ -23,12 +24,10 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willReturn;
-import static spring.study.common.enums.ErrorCode.DUPLICATED_MEMBER;
 
 @ExtendWith(MockitoExtension.class)
 //@MockitoSettings(strictness = Strictness.LENIENT)
@@ -75,6 +74,13 @@ class MemberServiceJoinTest {
                 .build();
     }
 
+    /**
+     * 21.10.15 피드백 (10.18 피드백 적용 완료)
+     * 수정 전
+     * List<Member> memberList = memberRepository.findByEmailOrMemberBasicInfo_MobileNum(member.getEmail(),
+     *                 member.getMemberBasicInfo().getMobileNum());
+     * 이게 then에 있었다. 이걸 사용하면 안된다. memberRepository는 mocking 처리로 끝내야 한다.
+     */
     @Test
     @DisplayName("회원 가입 성공")
     void joinSuccess() {
@@ -82,6 +88,7 @@ class MemberServiceJoinTest {
         //이메일과 번호가 중복된 회원은 없다.
         willReturn(new ArrayList<>()).given(memberRepository)
                 .findByEmailOrMemberBasicInfo_MobileNum(anyString(), anyString());
+
         given(memberRepository.save(any())).willReturn(member);
 
         //아래는 실패 코드 (왤까?)
@@ -89,15 +96,17 @@ class MemberServiceJoinTest {
         //given(memberRepository.save(eq(member))).willReturn(member);
 
         //then
-        List<Member> memberList = memberRepository.findByEmailOrMemberBasicInfo_MobileNum(member.getEmail(),
-                member.getMemberBasicInfo().getMobileNum());
         Member result = memberService.join(memberCommand);
 
         //when
-        assertTrue(memberList.isEmpty());
         assertThat(result).usingRecursiveComparison().isEqualTo(member);
     }
 
+    /**
+     * 21.10.15 피드백 (10.18 피드백 적용 완료)
+     * willThrow는 mocking처리에 대한 리턴 값이 아니기 때문에
+     * given에 willReturn과 willThrow를 같이 사용하지 않는다.
+     */
     @DisplayName("회원가입 실패 - 이메일 또는 전화번호가 중복일 때")
     @ParameterizedTest(name = "{index}: {2}")
     @MethodSource("invalidParameters")
@@ -116,7 +125,6 @@ class MemberServiceJoinTest {
         duplicatedList.add(duplicatedMember);
 
         willReturn(duplicatedList)
-                .willThrow(new CustomException(DUPLICATED_MEMBER))
                 .given(memberRepository).findByEmailOrMemberBasicInfo_MobileNum(
                         member.getEmail(),
                         member.getMemberBasicInfo().getMobileNum()
@@ -124,7 +132,9 @@ class MemberServiceJoinTest {
 
         //when
         //then
-        assertThrows(CustomException.class, () ->memberService.join(memberCommand));
+        CustomException exception = assertThrows(CustomException.class, () ->memberService.join(memberCommand));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.DUPLICATED_MEMBER);
+
 
     }
 
