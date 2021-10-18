@@ -1,9 +1,6 @@
 package spring.study.Product.domain.aggregates;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import spring.study.Product.domain.valueObjects.ProductBasicInfo;
 
 import javax.persistence.*;
@@ -13,6 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class Product {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

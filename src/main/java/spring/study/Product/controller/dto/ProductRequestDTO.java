@@ -1,15 +1,17 @@
 package spring.study.Product.controller.dto;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Getter
-@RequiredArgsConstructor
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class ProductRequestDTO {
-    private final String name;
-    private final Long price;
-    private final String filePath;
-    private final Long discPercent;
-    private final String color;
+    private String name;
+    private Long price;
+    private String filePath;
+    private Long discPercent;
+    private String color;
 
 }
