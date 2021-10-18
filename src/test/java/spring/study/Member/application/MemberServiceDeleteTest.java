@@ -19,8 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willReturn;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static spring.study.common.enums.ErrorCode.NOT_EXIST_MEMBER;
@@ -40,9 +39,9 @@ class MemberServiceDeleteTest {
     void successDelete() {
         //given
         Long id = 1L;
-        //삭제할 회원이 있는지 찾기, 회원 삭제가 되었는지 회원 찾기
-        given(memberRepository.findById(eq(id))).willReturn(Optional.of(new Member()), Optional.empty());
-        //willDoNothing().given(memberRepository.deleteById(id));
+        //삭제할 회원이 있는지 찾기
+        given(memberRepository.findById(eq(id))).willReturn(Optional.of(new Member()));
+        willDoNothing().given(memberRepository).deleteById(id);
 
         //when
         memberService.delete(id);
