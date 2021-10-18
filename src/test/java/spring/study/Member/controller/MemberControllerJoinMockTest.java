@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static spring.study.Member.controller.MemberController.PATH;
 import static spring.study.common.enums.ErrorCode.DUPLICATED_MEMBER;
 import static spring.study.common.enums.ErrorCode.FAIL_VALIDATE;
 import static spring.study.common.enums.SuccessCode.SUCCESS_JOIN_MEMBER;
@@ -98,7 +99,7 @@ class MemberControllerJoinMockTest {
 
         //when
         //then
-        mockMvc.perform(post("/member/members/new")
+        mockMvc.perform(post(PATH + "/new")
         .contentType(APPLICATION_JSON)
         .content(mapper.writeValueAsString(dto))
         .accept(APPLICATION_JSON))
@@ -121,7 +122,7 @@ class MemberControllerJoinMockTest {
 
         //when
         //then
-        mockMvc.perform(post("/member/members/new")
+        mockMvc.perform(post(PATH + "/new")
                 .accept(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(dto))
                 .contentType(APPLICATION_JSON))
@@ -156,7 +157,7 @@ class MemberControllerJoinMockTest {
 
         //when
         //then
-        mockMvc.perform(post("/member/members/new")
+        mockMvc.perform(post(PATH + "/new")
                 .accept(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(dtoVal))
                 .contentType(APPLICATION_JSON))

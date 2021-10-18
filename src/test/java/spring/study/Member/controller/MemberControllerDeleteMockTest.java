@@ -1,11 +1,9 @@
 package spring.study.Member.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,15 +15,15 @@ import spring.study.common.exceptions.CustomException;
 import spring.study.common.responses.ResponseMessage;
 
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static spring.study.common.enums.ErrorCode.FAIL_VALIDATE;
+import static spring.study.Member.controller.MemberController.PATH;
 import static spring.study.common.enums.ErrorCode.NOT_EXIST_MEMBER;
 import static spring.study.common.enums.SuccessCode.SUCCESS_DELETE_MEMBER;
 
@@ -57,7 +55,7 @@ class MemberControllerDeleteMockTest {
 
         //when
         //then
-        mockMvc.perform(delete("/member/members/{id}", id)
+        mockMvc.perform(delete(PATH + "/{id}", id)
         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(mapper.writeValueAsString(message)))
@@ -82,7 +80,7 @@ class MemberControllerDeleteMockTest {
 
         //when
         //then
-        mockMvc.perform(delete("/member/members/{id}", id)
+        mockMvc.perform(delete(PATH + "/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(mapper.writeValueAsString(message)))

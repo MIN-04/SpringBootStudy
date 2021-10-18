@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static spring.study.Member.controller.MemberController.PATH;
 import static spring.study.common.enums.SuccessCode.SUCCESS_FINDALL_MEMBER;
 
 @WebMvcTest(MemberController.class)
@@ -96,7 +97,7 @@ class MemberControllerFindAllMockTest {
 
         //when
         //then
-        mockMvc.perform(get("/member/members?page="+page+"&pageCount="+pageCount)
+        mockMvc.perform(get(PATH + "?page="+page+"&pageCount="+pageCount)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(mapper.writeValueAsString(message)))
