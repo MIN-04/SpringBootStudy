@@ -139,9 +139,7 @@ public class MemberController {
         log.info("[findAll - Controller] page = {}, pageCount = {}", page, pageCount);
 
         //서비스의 회원 목록 조회 메서드 호출 - return Page
-
-        //page(현재 페이지)는 0에서 부터 시작하여 받은 page 값-1을 해준다.
-        Page<Member> members = memberService.findAll(page-1, pageCount);
+        Page<Member> members = memberService.findAll(page, pageCount);
         //Page 객체에서 회원 목록만 memberList에 담기기
         List<Member> memberList = members.getContent();
         log.info("[findAll - Controller] memberList = {}", memberList);
