@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import spring.study.Product.domain.aggregates.Product;
+import spring.study.Product.domain.commands.ProductCommand;
+import spring.study.Product.domain.valueObjects.ProductBasicInfo;
 import spring.study.Product.infraStructure.repository.ProductJpaRepository;
 
 @Service
@@ -15,6 +17,23 @@ public class ProductService {
     @Autowired
     public ProductService(ProductJpaRepository productRepository) {
         this.productRepository = productRepository;
+    }
+
+    /**
+     * 상품 등록
+     */
+    public Product save(ProductCommand command) {
+        Product product = Product.builder()
+                .productBasicInfo(ProductBasicInfo.builder()
+                        .name(command.getBasicInfo().getName())
+                        .price(command.getBasicInfo().getPrice())
+                        .filePath(command.getBasicInfo().getFilePath())
+                        .discPercent(command.getBasicInfo().getDiscPercent())
+                        .color(command.getBasicInfo().getColor())
+                        .build())
+                .build();
+
+        return productRepository.save(product);
     }
 
     /**
