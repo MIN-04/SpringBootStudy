@@ -23,9 +23,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static spring.study.Member.controller.MemberController.PATH;
 import static spring.study.common.enums.ErrorCode.NOT_EXIST_MEMBER;
 import static spring.study.common.enums.SuccessCode.SUCCESS_DELETE_MEMBER;
+import static spring.study.common.paths.MemberUrl.MEMBERS_DELETE;
+import static spring.study.common.paths.MemberUrl.MEMBER_ROOT_PATH;
 
 @WebMvcTest(MemberController.class)
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +56,7 @@ class MemberControllerDeleteMockTest {
 
         //when
         //then
-        mockMvc.perform(delete(PATH + "/{id}", id)
+        mockMvc.perform(delete(MEMBER_ROOT_PATH + MEMBERS_DELETE, id)
         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(mapper.writeValueAsString(message)))
@@ -80,7 +81,7 @@ class MemberControllerDeleteMockTest {
 
         //when
         //then
-        mockMvc.perform(delete(PATH + "/{id}", id)
+        mockMvc.perform(delete(MEMBER_ROOT_PATH + MEMBERS_DELETE, id)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(mapper.writeValueAsString(message)))

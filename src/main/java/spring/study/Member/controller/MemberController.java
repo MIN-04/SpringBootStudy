@@ -19,18 +19,13 @@ import javax.validation.Valid;
 import java.util.List;
 
 import static spring.study.common.enums.SuccessCode.*;
+import static spring.study.common.paths.MemberUrl.*;
 
 @Slf4j
 @Validated
 @RestController
-//@RequestMapping("/member")
+@RequestMapping(MEMBER_ROOT_PATH)
 public class MemberController {
-
-    /**
-     * 21.10.15 피드백 (10.18 적용)
-     * url의 공통부분 static 변수로 선언하고 사용
-     */
-    static final String PATH = "/member/members";
 
     private final MemberService memberService;
     private final MemberRequestMapper mapper;
@@ -57,7 +52,7 @@ public class MemberController {
      * 21.10.15 피드백 (10.18 적용 완료)
      * 반환값인 ResponseEntity에 <> 사용해야 한다.
      */
-    @PostMapping(value = PATH + "/new")
+    @PostMapping(MEMBERS_NEW)
     public ResponseEntity<ResponseMessage> join(@RequestBody @Valid MemberRequestJoinDTO dto) {
 
         log.info("[join - Controller] dto = {}", dto);
@@ -85,7 +80,7 @@ public class MemberController {
      * 21.10.15 피드백 (10.18 적용 완료)
      * 반환값인 ResponseEntity에 <> 사용해야 한다.
      */
-    @PostMapping(PATH)
+    @PostMapping(MEMBERS_PATH)
     public ResponseEntity<ResponseMessage> modify(@RequestBody @Valid MemberRequestModifyDTO dto) {
 
         log.info("[modify] dto = {}", dto);
@@ -113,7 +108,7 @@ public class MemberController {
      * 21.10.15 피드백 (10.18 적용 완료)
      * 반환값인 ResponseEntity에 <> 사용해야 한다.
      */
-    @DeleteMapping(PATH + "/{id}")
+    @DeleteMapping(MEMBERS_DELETE)
     public ResponseEntity<ResponseMessage> delete(@PathVariable Long id) {
 
         log.info("[delete - Controller] id = {}", id);
@@ -138,7 +133,7 @@ public class MemberController {
      * 21.10.15 피드백 (10.18 적용 완료)
      * 반환값인 ResponseEntity에 <> 사용해야 한다.
      */
-    @GetMapping(PATH)
+    @GetMapping(MEMBERS_PATH)
     public ResponseEntity<ResponseMessage> findAll(@RequestParam int page, @RequestParam int pageCount){
 
         log.info("[findAll - Controller] page = {}, pageCount = {}", page, pageCount);

@@ -26,8 +26,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static spring.study.Member.controller.MemberController.PATH;
 import static spring.study.common.enums.SuccessCode.SUCCESS_FINDALL_MEMBER;
+import static spring.study.common.paths.MemberUrl.MEMBERS_PATH;
+import static spring.study.common.paths.MemberUrl.MEMBER_ROOT_PATH;
 
 @WebMvcTest(MemberController.class)
 @ExtendWith(MockitoExtension.class)
@@ -97,7 +98,7 @@ class MemberControllerFindAllMockTest {
 
         //when
         //then
-        mockMvc.perform(get(PATH + "?page="+page+"&pageCount="+pageCount)
+        mockMvc.perform(get(MEMBER_ROOT_PATH + MEMBERS_PATH +"?page="+page+"&pageCount="+pageCount)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(mapper.writeValueAsString(message)))
