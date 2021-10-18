@@ -19,7 +19,7 @@ import static spring.study.common.enums.ErrorCode.NOT_EXIST_MEMBER;
 @Service
 public class MemberService {
 
-    private MemberJPARepository memberRepository;
+    private final MemberJPARepository memberRepository;
 
     @Autowired
     public MemberService(MemberJPARepository memberRepository) {
@@ -44,7 +44,7 @@ public class MemberService {
         //아이디 중복체크 (이메일과 번호)
         List<Member> memberList = memberRepository.findByEmailOrMemberBasicInfo_MobileNum(member.getEmail(),
                 member.getMemberBasicInfo().getMobileNum());
-        
+
         //중복된 회원이 있으면 Exception 발생
         if (!memberList.isEmpty()) throw new CustomException(DUPLICATED_MEMBER);
 
@@ -54,7 +54,8 @@ public class MemberService {
 
     /**
      * 회원 수정
-     * 21.10.06 수정
+     * 21.10.15 피드백 (10.18 피드백 적용)
+     * 복잡한 로직은 메서드로 빼기
      */
     public Member modify(MemberCommand command) {
         log.info("[modify - Service] command = {}", command);
@@ -73,33 +74,10 @@ public class MemberService {
             throw new CustomException(NOT_EXIST_MEMBER);
         }
 
-        //수정할 이메일, 전화번호가 다른 멤버와 중복인지 확인 -> 수정할 Member Id와 찾은 Member Id 비교
-        //member의 mobileNum
-        String mobileNum = member.getMemberBasicInfo().getMobileNum(); 
-        //중복된 멤버 찾기
-        List<Member> memberList = memberRepository.findByEmailOrMemberBasicInfo_MobileNum(member.getEmail(), mobileNum);
-        log.info("[modify - Service] memberList = {}", memberList);
-
-        Long memberId = member.getId();
-        if(!memberList.isEmpty()) {
-            memberList.forEach(m -> {
-                if (!memberId.equals(m.getId())) {
-                    throw new CustomException(DUPLICATED_MEMBER);
-                }
-            });
-        }
-
-        //email 중복 찾기
-        //Optional<Member> emailMember = memberRepository.findByEmail(member.getEmail());
-        //log.info("[modify - Service] emailMember = {}", emailMember);
-
-        //mobileNum 중복 찾기
-        //String mobileNum = member.getMemberBasicInfo().getMobileNum(); //member의 mobileNum
-        //Optional<Member> mobileMember = memberRepository.findIdByMemberBasicInfo_MobileNum(mobileNum);
-        //log.info("[modify - Service] mobileMember = {}", mobileMember);
-
-        //수정할 Member Id와 찾은 Member Id 비교할 메서드
-        //findDuplicatedMember(member.getId(), emailMember, mobileMember);
+        //수정할 이메일, 전화번호가 다른 멤버와 중복인지 확인 메서드
+        // -> 수정할 Member Id와 찾은 Member Id 비교
+        // -> 다르면 Exception 발생
+        findDuplicatedMemberThrowExceptionFn(member);
 
         //회원 수정
         return memberRepository.save(member);
@@ -137,38 +115,28 @@ public class MemberService {
     }
 
     /**
-     * 수정할 Member Id와 찾은 Member Id 비교 메서드
-     * @param memberId
-     * @param emailMember
-     * @param mobileMember
+     * 이메일 또는 전화번호 중복된 멤버 찾아, 아이디가 다르면 Exception 발생 Function
+     * @param member
      */
-    /*public void findDuplicatedMember(Long memberId, Optional<Member> emailMember, Optional<Member> mobileMember) {
-        //중복된 이메일을 가진 회원이 존재할 때
-        if (emailMember.isPresent()) {
-            //수정할 member와 찾은 member id가 다를 때 -> Exception 발생
-            if (!memberId.equals(emailMember.get().getId())) {
-                throw new CustomException(DUPLICATED_EMAIL);
-            }
-        }
-        //중복된 전화번호를 가진 회원이 존재할 때
-        if (mobileMember.isPresent()) {
-            //수정할 member와 찾은 member id가 다를 때 -> Exception 발생
-            if (!memberId.equals(mobileMember.get().getId())) {
-                throw new CustomException(DUPLICATED_MOBILENUM);
-            }
-        }
+    public void findDuplicatedMemberThrowExceptionFn(Member member) {
+        //중복된 멤버 찾기
+        List<Member> memberList = memberRepository
+                .findByEmailOrMemberBasicInfo_MobileNum(member.getEmail(),
+                        member.getMemberBasicInfo().getMobileNum());
+        log.info("[modify - Service] memberList = {}", memberList);
 
-        *//** 궁금한 점!
-         * 이메일과 전화번호 중복체크 할 때 repository 메서드를 하나로 합쳐줬었다.
-         * 그런데 수정에서 어떤 것이 중복인지 안알려주면 안된다고 생각했다.
-         * 이메일과 전화번호 중복체크를 나누는게 맞을지 하나로 합치는게 맞을지 궁금
-         * 아래는 합친 코드
-         * *//*
-        *//* if (emailMember.isPresent() || mobileMember.isPresent()) {
-            //수정할 member와 찾은 member id가 다를 때 -> Exception 발생
-            if (!memberId.equals(emailMember.get().getId()) || !memberId.equals(mobileMember.get().getId())) {
-                throw new CustomException(DUPLICATED_MEMBER);
-            }
-        }*//*
-    }*/
+        /*memberList.stream().filter(m -> !m.getId().equals(member.getId()))
+                .findAny().ifPresent(m -> {
+            throw new CustomException(DUPLICATED_MEMBER);
+        });*/
+
+        Long memberId = member.getId();
+        if(!memberList.isEmpty()) {
+            memberList.forEach(m -> {
+                if (!memberId.equals(m.getId())) {
+                    throw new CustomException(DUPLICATED_MEMBER);
+                }
+            });
+        }
+    }
 }
