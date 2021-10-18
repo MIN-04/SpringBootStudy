@@ -1,17 +1,13 @@
 package spring.study.Member.infraStructure.repository;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.annotation.Transactional;
 import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
@@ -26,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @DisplayName("[Repository] Jpa Repository 테스트")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MemberJPARepositoryTest {
     @Autowired
     MemberJPARepository memberRepository;
@@ -50,25 +47,28 @@ class MemberJPARepositoryTest {
     }
 
     @Test
+    @Order(1)
     @DisplayName("회원 가입")
     void save(){
         //given
         //when
-        Member result = memberRepository.save(member);
+        Member saveResult = memberRepository.save(member);
+        System.out.println(saveResult.getId());
 
         //then
-        assertThat(result).usingRecursiveComparison().isEqualTo(member); //객체 안에 있는 객체 비교
+        assertThat(saveResult).usingRecursiveComparison().isEqualTo(member); //객체 안에 있는 객체 비교
     }
 
     @Test
+    @Order(2)
     @DisplayName("회원 수정")
     void modify() {
         //given
-        Member saveMember = memberRepository.save(member);
+        Member saveResult = memberRepository.save(member);
 
         //변경할 정보
         Member updateMember = Member.builder()
-                .id(saveMember.getId())
+                .id(saveResult.getId())
                 .email("hongUpdate@naver.com")
                 .memberBasicInfo(MemberBasicInfo.builder()
                         .password("abcd1!")
@@ -86,12 +86,13 @@ class MemberJPARepositoryTest {
         Member updateResult = memberRepository.save(updateMember);
 
         //then
-        assertThat(updateResult.getId()).isEqualTo(saveMember.getId());
+        assertThat(updateResult.getId()).isEqualTo(saveResult.getId());
         assertThat(updateResult).usingRecursiveComparison().isEqualTo(updateMember);
     }
 
     //21.10.01 피드백 (10.06 수정 완료)
     //테스트에서 조건이 다 다른데 같은 동작을 반복해야 할 경우 → @ParaeterizedTest 사용
+    @Order(3)
     @DisplayName("이메일 또는 전화번호 중복 찾기")
     @ParameterizedTest(name = "{index}: {2}")
     @MethodSource("invalidParameters")
@@ -105,9 +106,7 @@ class MemberJPARepositoryTest {
 
         //then
         assertFalse(resultList.isEmpty()); //false여야 통과
-        resultList.forEach(m -> {
-            assertThat(m).usingRecursiveComparison().isEqualTo(member);
-        });
+        resultList.forEach(m -> assertThat(m).usingRecursiveComparison().isEqualTo(member));
 
     }
 
@@ -123,6 +122,7 @@ class MemberJPARepositoryTest {
     }
 
     @Test
+    @Order(4)
     @DisplayName("회원 목록 검색")
     void findAll() {
         //given
@@ -175,6 +175,7 @@ class MemberJPARepositoryTest {
     }
 
     @Test
+    @Order(5)
     @DisplayName("회원 삭제")
     void deleteById() {
         //given
