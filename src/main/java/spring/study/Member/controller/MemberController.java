@@ -47,11 +47,11 @@ public class MemberController {
 
     /**
      * 회원 가입
-     * @param dto
-     * @return
+     * 21.10.15 피드백 (10.18 적용 완료)
+     * 반환값인 ResponseEntity에 <> 사용해야 한다.
      */
     @PostMapping(value = "/members/new", produces = "application/json; charset=utf8")
-    public ResponseEntity join(@RequestBody @Valid MemberRequestJoinDTO dto) {
+    public ResponseEntity<ResponseMessage> join(@RequestBody @Valid MemberRequestJoinDTO dto) {
 
         log.info("[join - Controller] dto = {}", dto);
 
@@ -75,15 +75,11 @@ public class MemberController {
 
     /**
      * 회원 수정
-     * @param dto
-     * @return
+     * 21.10.15 피드백 (10.18 적용 완료)
+     * 반환값인 ResponseEntity에 <> 사용해야 한다.
      */
-    /** 궁금한 점! 수정은 PUT? POST?
-     * PUT으로 사용할 경우 리소스를 덮어씌우는 거라 PATCH를 사용하라고 했음
-     * 하지만 PATCH는 지원 안하는 곳이 많아 POST를 사용한다고 했다.
-     * */
     @PostMapping("/members")
-    public ResponseEntity modify(@RequestBody @Valid MemberRequestModifyDTO dto) {
+    public ResponseEntity<ResponseMessage> modify(@RequestBody @Valid MemberRequestModifyDTO dto) {
 
         log.info("[modify] dto = {}", dto);
 
@@ -104,13 +100,14 @@ public class MemberController {
 
     /**
      * 회원 삭제
-     * @return
+     * 21.10.01 피드백 (10.05 수정 완료)
+     * 회원 삭제 같은 경우 @GetMapping 말고 @DeleteMapping 사용 → HTTP delete 메서드 사용
+     * url에 delete를 사용하지 않는다.
+     * 21.10.15 피드백 (10.18 적용 완료)
+     * 반환값인 ResponseEntity에 <> 사용해야 한다.
      */
-    //21.10.01 피드백 (10.05 수정 완료)
-    //회원 삭제 같은 경우 @GetMapping 말고 @DeleteMapping 사용 → HTTP delete 메서드 사용
-    //url에 delete를 사용하지 않는다.
     @DeleteMapping("/members/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity<ResponseMessage> delete(@PathVariable Long id) {
 
         log.info("[delete - Controller] id = {}", id);
 
@@ -128,13 +125,14 @@ public class MemberController {
      * 회원 목록 조회
      * @param page : 페이지 index
      * @param pageCount : 한 페이지당 데이터 수
-     * @return
+     * 21.10.01 피드백 (10.05 수정 완료)
+     * 회원 목록 조회 같은 건 @Pathvariable {page}/{pageCount}로 하지 않는다. → queryString 으로 받기
+     * member/members?page=1&pageCount=10
+     * 21.10.15 피드백 (10.18 적용 완료)
+     * 반환값인 ResponseEntity에 <> 사용해야 한다.
      */
-    //21.10.01 피드백 (10.05 수정 완료)
-    //회원 목록 조회 같은 건 @Pathvariable {page}/{pageCount}로 하지 않는다. → queryString 으로 받기
-    //member/members?page=1&pageCount=10
     @GetMapping("/members")
-    public ResponseEntity findAll(@RequestParam int page, @RequestParam int pageCount){
+    public ResponseEntity<ResponseMessage> findAll(@RequestParam int page, @RequestParam int pageCount){
 
         log.info("[findAll - Controller] page = {}, pageCount = {}", page, pageCount);
 
