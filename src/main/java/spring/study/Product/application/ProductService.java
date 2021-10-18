@@ -1,5 +1,6 @@
 package spring.study.Product.application;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,6 +10,7 @@ import spring.study.Product.domain.commands.ProductCommand;
 import spring.study.Product.domain.valueObjects.ProductBasicInfo;
 import spring.study.Product.infraStructure.repository.ProductJpaRepository;
 
+@Slf4j
 @Service
 public class ProductService {
 
@@ -24,14 +26,9 @@ public class ProductService {
      */
     public Product save(ProductCommand command) {
         Product product = Product.builder()
-                .productBasicInfo(ProductBasicInfo.builder()
-                        .name(command.getBasicInfo().getName())
-                        .price(command.getBasicInfo().getPrice())
-                        .filePath(command.getBasicInfo().getFilePath())
-                        .discPercent(command.getBasicInfo().getDiscPercent())
-                        .color(command.getBasicInfo().getColor())
-                        .build())
+                .productBasicInfo(command.getBasicInfo())
                 .build();
+        log.info("Product [Service- save] product = {}", product.toString());
 
         return productRepository.save(product);
     }
