@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import spring.study.Member.controller.validations.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -28,5 +30,7 @@ public class MemberRequestModifyDTO {
     private String mobileNum; //전화번호
     private String gender; //성별
     private String birth; //생년월일
+    private List<String> roles; //회원 권한
+    private String provider; //제공사  (Naver, Google 등)
 
 }

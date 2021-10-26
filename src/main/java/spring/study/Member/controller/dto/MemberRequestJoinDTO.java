@@ -20,6 +20,7 @@ public class MemberRequestJoinDTO {
     //@NotBlank
     @EmailValidation
     private String email; //이메일 (회원 ID)
+    private String provider; //제공사  (Naver, Google 등)
     @PasswordValidation(min = 4, max = 8)
     private String password; //패스워드
     @NameValidation
