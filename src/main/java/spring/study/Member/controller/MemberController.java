@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import spring.study.Member.application.MemberService;
 import spring.study.Member.controller.dto.MemberRequestJoinDTO;
+import spring.study.Member.controller.dto.MemberRequestLoginDTO;
 import spring.study.Member.controller.dto.MemberRequestModifyDTO;
 import spring.study.Member.controller.dto.mapper.MemberRequestMapper;
 import spring.study.Member.domain.aggregates.Member;
@@ -45,6 +46,27 @@ public class MemberController {
                 .message(sc.getSuccessMsg())
                 .resultData(result)
                 .build();
+    }
+
+    /**
+     * 로그인
+     */
+    @PostMapping("/login")
+    public ResponseEntity<ResponseMessage> login(@RequestBody MemberRequestLoginDTO dto) {
+        log.info("[login - Controller] dto = {}", dto);
+
+        //MemberRequestJoinDTO -> Membercommand
+        MemberCommand command = mapper.toCommand(dto);
+
+
+        String result = memberService.login(command);
+        log.info("[login - Controller] result = {}", result);
+
+        //응답 메시지 만드는 메서드 호출
+        ResponseMessage rm = setResponseMessage(SUCCESS_LOGIN, result);
+
+        return ResponseEntity.ok(rm);
+
     }
 
     /**
