@@ -4,12 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import spring.study.Member.domain.aggregates.Member;
@@ -17,13 +11,9 @@ import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
 import spring.study.Member.infraStructure.repository.MemberJPARepository;
 import spring.study.common.exceptions.CustomException;
-import spring.study.common.security.JwtTokenProvider;
 
-import javax.persistence.Column;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static spring.study.common.enums.ErrorCode.DUPLICATED_MEMBER;
 import static spring.study.common.enums.ErrorCode.NOT_EXIST_MEMBER;
@@ -33,33 +23,12 @@ import static spring.study.common.enums.ErrorCode.NOT_EXIST_MEMBER;
 public class MemberService{
 
     private final MemberJPARepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public MemberService(MemberJPARepository memberRepository, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
+    public MemberService(MemberJPARepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
         this.passwordEncoder = passwordEncoder;
-    }
-
-
-    /**
-     * 회원 로그인
-     */
-    public String login(MemberCommand command) {
-        Member member = Member.builder()
-                .email(command.getEmail())
-                .memberBasicInfo(command.getBasicInfo())
-                .build();
-
-        Member result = memberRepository.findByEmail(member.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
-
-        if (!passwordEncoder.matches(member.getMemberBasicInfo().getPassword(), result.getPassword()))
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
-
-        return jwtTokenProvider.createToken(member.getUsername(), member.getRoles());
     }
 
     /**
@@ -109,7 +78,13 @@ public class MemberService{
                 .id(command.getId())
                 .email(command.getEmail())
                 .roles(command.getRoles())
-                .memberBasicInfo(command.getBasicInfo())
+                .memberBasicInfo(MemberBasicInfo.builder()
+                        .password(passwordEncoder.encode(command.getBasicInfo().getPassword()))
+                        .name(command.getBasicInfo().getName())
+                        .mobileNum(command.getBasicInfo().getMobileNum())
+                        .gender(command.getBasicInfo().getGender())
+                        .birth(command.getBasicInfo().getBirth())
+                        .build())
                 .memberAddressInfo(command.getAddressInfo())
                 .build();
         log.info("[modify - Service] member = {}", member);

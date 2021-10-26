@@ -48,26 +48,26 @@ public class MemberController {
                 .build();
     }
 
-    /**
-     * 로그인
-     */
-    @PostMapping("/login")
-    public ResponseEntity<ResponseMessage> login(@RequestBody MemberRequestLoginDTO dto) {
-        log.info("[login - Controller] dto = {}", dto);
-
-        //MemberRequestJoinDTO -> Membercommand
-        MemberCommand command = mapper.toCommand(dto);
-
-
-        String result = memberService.login(command);
-        log.info("[login - Controller] result = {}", result);
-
-        //응답 메시지 만드는 메서드 호출
-        ResponseMessage rm = setResponseMessage(SUCCESS_LOGIN, result);
-
-        return ResponseEntity.ok(rm);
-
-    }
+//    /**
+//     * 로그인
+//     */
+//    @PostMapping("/login")
+//    public ResponseEntity<ResponseMessage> login(@RequestBody MemberRequestLoginDTO dto) {
+//        log.info("[login - Controller] dto = {}", dto);
+//
+//        //MemberRequestJoinDTO -> Membercommand
+//        MemberCommand command = mapper.toCommand(dto);
+//
+//
+//        String result = memberService.login(command);
+//        log.info("[login - Controller] result = {}", result);
+//
+//        //응답 메시지 만드는 메서드 호출
+//        ResponseMessage rm = setResponseMessage(SUCCESS_LOGIN, result);
+//
+//        return ResponseEntity.ok(rm);
+//
+//    }
 
     /**
      * 회원 가입
