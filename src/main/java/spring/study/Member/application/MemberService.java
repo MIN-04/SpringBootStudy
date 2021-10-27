@@ -145,6 +145,7 @@ public class MemberService{
                         member.getMemberBasicInfo().getMobileNum());
         log.info("[modify - Service] memberList = {}", memberList);
 
+        //filter 사용하기
         /*memberList.stream().filter(m -> !m.getId().equals(member.getId()))
                 .findAny().ifPresent(m -> {
             throw new CustomException(DUPLICATED_MEMBER);
