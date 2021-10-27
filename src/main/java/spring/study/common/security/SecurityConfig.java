@@ -17,11 +17,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final SnsTokenProvider snsTokenProvider;
 
     @Autowired
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtTokenProvider jwtTokenProvider) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtTokenProvider jwtTokenProvider, SnsTokenProvider snsTokenProvider) {
         this.customUserDetailsService = customUserDetailsService;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.snsTokenProvider = snsTokenProvider;
     }
 
     @Bean
@@ -44,43 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new SnsAuthenticationFilter(snsTokenProvider), UsernamePasswordAuthenticationFilter.class);
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
-
-//        http.httpBasic().disable()  // 기본 설정 해제
-//                .csrf().disable()       //  csrf 보안토큰 처리 해제
-//                //  세션 사용하지 않음. (토큰 인증 기반)
-////                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-////                .and()
-//                .authorizeRequests()
-//                .antMatchers("/login").permitAll()
-//                .anyRequest().permitAll();
-//        http.csrf().disable()
-//                .authorizeRequests()
-//                    //페이지 권한 설정
-//                    .antMatchers("/member/members/new").permitAll()
-//                    .antMatchers("/login").permitAll()
-//                    .antMatchers("/member/**").hasRole("ADMIN")
-//                    .antMatchers("/**").permitAll()
-//                .and()
-//                    .formLogin()
-//                    .loginPage("/login")
-//                    .permitAll();
-//
-//        http.authorizeRequests()
-//                .mvcMatchers("/",
-//                        "/login", "/member/members/new").permitAll()
-//                .anyRequest().authenticated();
-//
-//        http.csrf().disable();
-//
-//        http.formLogin()
-//                .loginPage("/login")
-//                .permitAll();
-//
-//        http.logout()
-//                .logoutUrl("/logout")
-//                .logoutSuccessUrl("/");
     }
 
     /**
