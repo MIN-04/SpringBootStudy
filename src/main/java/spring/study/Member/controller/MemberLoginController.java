@@ -3,29 +3,34 @@ package spring.study.Member.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import spring.study.Member.application.MemberLoginService;
-import spring.study.Member.application.MemberService;
+import spring.study.Member.application.OauthService;
 import spring.study.Member.controller.dto.MemberRequestLoginDTO;
 import spring.study.Member.controller.dto.mapper.MemberRequestMapper;
 import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.common.enums.SuccessCode;
 import spring.study.common.responses.ResponseMessage;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 import static spring.study.common.enums.SuccessCode.SUCCESS_LOGIN;
+import static spring.study.common.paths.LoginUrl.*;
 
 @Slf4j
 @RestController
+@RequestMapping(LOGIN_ROOT_PATH)
 public class MemberLoginController {
 
     private final MemberLoginService memberLoginService;
+    private final OauthService oauthService;
     private final MemberRequestMapper mapper;
 
     @Autowired
-    public MemberLoginController(MemberLoginService memberLoginService) {
+    public MemberLoginController(MemberLoginService memberLoginService, OauthService oauthService) {
         this.memberLoginService = memberLoginService;
+        this.oauthService = oauthService;
         this.mapper = new MemberRequestMapper();
     }
 
@@ -41,11 +46,11 @@ public class MemberLoginController {
     }
 
     /**
-     * 로그인
+     * 로컬 로그인
      */
-    @PostMapping("/login")
+    @PostMapping
     public ResponseEntity<ResponseMessage> login(@RequestBody MemberRequestLoginDTO dto) {
-        log.info("[login - Controller] dto = {}", dto);
+        log.info("[MemberLoginController - login()] dto = {}", dto);
 
         //MemberRequestJoinDTO -> Membercommand
         MemberCommand command = mapper.toCommand(dto);
@@ -59,5 +64,28 @@ public class MemberLoginController {
 
         return ResponseEntity.ok(rm);
 
+    }
+
+    /**
+     * 사용자로부터 SNS 로그인 요청을 Social Login Type을 받아 처리
+     * 예를 들어 [구글 아이디로 로그인]을 클릭하면 이 컨트롤러로 요청 받는 것
+    * @param socialLoginType (GOOGLE, NAVER, KAKAO)
+     */
+    @GetMapping(LOGIN_SOCIAL_TYPE)
+    public void socialLoginType(@PathVariable String socialLoginType, HttpServletResponse response) throws IOException {
+        log.info("[MemberLoginController - socialLoginType()] 사용자로부터 SNS 로그인 요청을 받음 :: socialLoginType = {}", socialLoginType);
+
+        //redirect URL 분기처리 할 Service 호출
+        //redirect URL : 로그인 하는 화면을 나타내는 거라고 생각하면 된다.
+        String redirectionUrl = oauthService.request(socialLoginType);
+
+        response.sendRedirect(redirectionUrl);
+    }
+
+    @GetMapping(LOGIN_SOCIAL_CALLBACK)
+    public String callBack(@PathVariable String socialLoginType, @RequestParam String code) {
+        log.info("[MemberLoginController - callBack()] 소셜 로그인 API 서버로부터 받은 code :: socialLoginType = {}, code = {}", socialLoginType, code);
+
+        return null;
     }
 }
