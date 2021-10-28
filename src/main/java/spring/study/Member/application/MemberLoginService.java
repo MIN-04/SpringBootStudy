@@ -8,8 +8,8 @@ import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.infraStructure.repository.MemberJPARepository;
 import spring.study.Member.infraStructure.rest.OAuthToken;
-import spring.study.common.security.JwtTokenProvider;
-import spring.study.common.security.SnsTokenProvider;
+import spring.study.common.auth.providers.JwtTokenProvider;
+import spring.study.common.auth.providers.SnsTokenProvider;
 
 @Slf4j
 @Service
