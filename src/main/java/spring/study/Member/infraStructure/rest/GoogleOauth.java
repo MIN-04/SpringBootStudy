@@ -60,8 +60,8 @@ public class GoogleOauth implements SocialOauth {
             add("grant_type", "authorization_code");
         }};
 
+        // TODO : RestTemplate -> WebFlux 사용
         ResponseEntity<GoogleOAuthResponseDTO> responseEntity = restTemplate.postForEntity(GOOGLE_REQUEST_URL, query, GoogleOAuthResponseDTO.class);
-        System.out.println("responseEntity.getBody() = " + responseEntity.getBody());
 
         if(responseEntity.getStatusCode() == HttpStatus.OK) {
             return responseEntity.getBody();
