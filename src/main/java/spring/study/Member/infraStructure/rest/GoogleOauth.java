@@ -9,7 +9,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import spring.study.Member.domain.services.SocialOauth;
 import spring.study.Member.infraStructure.rest.dto.GoogleOAuthResponseDTO;
-import spring.study.common.enums.ErrorCode;
 import spring.study.common.enums.SocialLoginType;
 import spring.study.common.exceptions.CustomException;
 
