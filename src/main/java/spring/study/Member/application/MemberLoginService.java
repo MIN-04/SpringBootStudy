@@ -1,5 +1,6 @@
 package spring.study.Member.application;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -8,25 +9,22 @@ import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.infraStructure.repository.MemberJPARepository;
 import spring.study.Member.infraStructure.rest.OAuthToken;
+import spring.study.common.auth.SocialOauth;
+import spring.study.common.auth.SocialOauthFactory;
 import spring.study.common.auth.providers.JwtTokenProvider;
 import spring.study.common.auth.providers.SnsTokenProvider;
+import spring.study.common.enums.SocialLoginType;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class MemberLoginService {
 
     private final MemberJPARepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final SnsTokenProvider snsTokenProvider;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public MemberLoginService(MemberJPARepository memberRepository, JwtTokenProvider jwtTokenProvider, SnsTokenProvider snsTokenProvider, PasswordEncoder passwordEncoder) {
-        this.memberRepository = memberRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.snsTokenProvider = snsTokenProvider;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final SocialOauthFactory socialOauthFactory;
 
     /**
      * 로컬 회원 로그인
@@ -53,4 +51,13 @@ public class MemberLoginService {
         return snsTokenProvider.createToken(code);
     }
 
+    /**
+     * Social RedirectURL 불러오는 메서드
+     */
+    public String findSocialRedirectUrl(String type) {
+        SocialLoginType socialLoginType = SocialLoginType.valueOf(type);
+
+        SocialOauth socialOauth = socialOauthFactory.findSocialOauthType(socialLoginType);
+        return socialOauth.getOauthRedirectUrl();
+    }
 }

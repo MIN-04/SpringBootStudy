@@ -84,31 +84,9 @@ public class MemberLoginController {
 
         //redirect URL 분기처리 할 Service 호출
         //redirect URL : 로그인 하는 화면을 나타내는 거라고 생각하면 된다.
-        //String redirectionUrl = oauthService.request(socialLoginType);
-        String redirectionUrl = "";
-        switch (socialLoginType) {
-            case "google": {
-                MultiValueMap<String, String> query = new LinkedMultiValueMap<>() {{
-                    add("scope", "profile");
-                    add("response_type", "code");
-                    add("client_id", GOOGLE_SNS_CLINET_ID);
-                    add("redirect_uri", GOOGLE.getRedirectionUrl());
-                    add("access_type", "offline");
-                }};
-
-                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(GOOGLE.getBaseUrl())
-                        .queryParams(query);
-                redirectionUrl = builder.toUriString();
-                break;
-            }
-            case "kakao":
-                break;
-            default:
-                throw new IllegalStateException("알 수 없는 소셜 로그인 형식입니다.");
-        }
+        String redirectionUrl = memberLoginService.findSocialRedirectUrl(socialLoginType);
 
         response.sendRedirect(redirectionUrl);
-        //response.sendRedirect(redirectionUrl);
     }
 
     @GetMapping(LOGIN_SOCIAL_CALLBACK)
