@@ -81,6 +81,9 @@ public class MemberLoginController {
         response.sendRedirect(redirectionUrl);
     }
 
+    /**
+     * 외부 SNS 서버에서 받아온 Code로 로그인 및 Token 발생 요청하는 메서드
+     */
     @GetMapping(LOGIN_SOCIAL_CALLBACK)
     public ResponseEntity<ResponseMessage> callBack(@PathVariable String socialLoginType, @RequestParam String code) {
         log.info("[MemberLoginController - callBack()] 소셜 로그인 API 서버로부터 받은 code :: socialLoginType = {}, code = {}", socialLoginType, code);
@@ -91,6 +94,5 @@ public class MemberLoginController {
         ResponseMessage rm = setResponseMessage(result);
 
         return ResponseEntity.ok(rm);
-        //return oauthService.requestAccessToken(code);
     }
 }
