@@ -1,4 +1,4 @@
-package spring.study.Member.infraStructure.rest;
+package spring.study.Member.infraStructure.rest.dto;
 
 import lombok.*;
 
@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @ToString
-public class OAuthToken {
+public class GoogleOAuthResponseDTO {
     private String access_token;
     private String expires_in;
     private String id_token;

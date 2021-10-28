@@ -3,24 +3,17 @@ package spring.study.Member.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
 import spring.study.Member.application.MemberLoginService;
-import spring.study.Member.infraStructure.rest.OauthService;
 import spring.study.Member.controller.dto.MemberRequestLoginDTO;
 import spring.study.Member.controller.dto.mapper.MemberRequestMapper;
 import spring.study.Member.domain.commands.MemberCommand;
-import spring.study.Member.infraStructure.rest.OAuthToken;
-import spring.study.common.enums.SuccessCode;
+import spring.study.Member.infraStructure.rest.dto.GoogleOAuthResponseDTO;
 import spring.study.common.responses.ResponseMessage;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static spring.study.common.client_gitignore.ClientProfile.GOOGLE_SNS_CLINET_ID;
-import static spring.study.common.enums.SocialLoginType.GOOGLE;
 import static spring.study.common.enums.SuccessCode.SUCCESS_LOGIN;
 import static spring.study.common.paths.LoginUrl.*;
 
@@ -30,24 +23,23 @@ import static spring.study.common.paths.LoginUrl.*;
 public class MemberLoginController {
 
     private final MemberLoginService memberLoginService;
-    private final OauthService oauthService;
     private final MemberRequestMapper mapper;
 
     @Autowired
-    public MemberLoginController(MemberLoginService memberLoginService, OauthService oauthService) {
+    public MemberLoginController(MemberLoginService memberLoginService) {
         this.memberLoginService = memberLoginService;
-        this.oauthService = oauthService;
         this.mapper = new MemberRequestMapper();
     }
 
     /**
      * 응답 메시지 만드는 메서드
+     * 21.10.27 피드백 (10.28 수정 완료)
      * 파라미터 sc 이부분 노란박스 수정하기
      */
-    private ResponseMessage setResponseMessage(SuccessCode sc, Object result) {
+    private ResponseMessage setResponseMessage(Object result) {
         return ResponseMessage.builder()
-                .httpStatus(sc.getHttpStatus())
-                .message(sc.getSuccessMsg())
+                .httpStatus(SUCCESS_LOGIN.getHttpStatus())
+                .message(SUCCESS_LOGIN.getSuccessMsg())
                 .resultData(result)
                 .build();
     }
@@ -67,7 +59,7 @@ public class MemberLoginController {
         log.info("[login - Controller] result = {}", result);
 
         //응답 메시지 만드는 메서드 호출
-        ResponseMessage rm = setResponseMessage(SUCCESS_LOGIN, result);
+        ResponseMessage rm = setResponseMessage(result);
 
         return ResponseEntity.ok(rm);
 
@@ -93,10 +85,10 @@ public class MemberLoginController {
     public ResponseEntity<ResponseMessage> callBack(@PathVariable String socialLoginType, @RequestParam String code) {
         log.info("[MemberLoginController - callBack()] 소셜 로그인 API 서버로부터 받은 code :: socialLoginType = {}, code = {}", socialLoginType, code);
 
-        OAuthToken result = memberLoginService.loginSNS(code);
+        GoogleOAuthResponseDTO result = memberLoginService.loginSNS(socialLoginType, code);
 
         //응답 메시지 만드는 메서드 호출
-        ResponseMessage rm = setResponseMessage(SUCCESS_LOGIN, result);
+        ResponseMessage rm = setResponseMessage(result);
 
         return ResponseEntity.ok(rm);
         //return oauthService.requestAccessToken(code);

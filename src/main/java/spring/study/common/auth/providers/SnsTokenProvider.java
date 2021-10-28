@@ -10,8 +10,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import spring.study.Member.domain.services.CustomUserDetailsService;
-import spring.study.Member.infraStructure.rest.OauthService;
-import spring.study.Member.infraStructure.rest.OAuthToken;
+import spring.study.Member.domain.services.SocialOauth;
+import spring.study.Member.domain.services.SocialOauthFactory;
+import spring.study.Member.infraStructure.rest.dto.GoogleOAuthResponseDTO;
+import spring.study.common.enums.SocialLoginType;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -25,13 +27,12 @@ public class SnsTokenProvider {
     private long tokenValidMilisecond = 30 * 60 * 1000L; // 30분만 토큰 유효
 
     private final UserDetailsService userDetailsService;
-
-    private final OauthService oauthService;
+    private final SocialOauthFactory socialOauthFactory;
 
     @Autowired
-    public SnsTokenProvider(CustomUserDetailsService customUserDetailsService, OauthService oauthService) {
+    public SnsTokenProvider(CustomUserDetailsService customUserDetailsService, SocialOauthFactory socialOauthFactory) {
         this.userDetailsService = customUserDetailsService;
-        this.oauthService = oauthService;
+        this.socialOauthFactory = socialOauthFactory;
     }
 
     @PostConstruct // 객체 초기화, secretKey를 Base64로 인코딩한다.
@@ -40,8 +41,12 @@ public class SnsTokenProvider {
     }
 
     // SNS API 토큰 생성
-    public OAuthToken createToken(String code) {
-        return oauthService.requestAccessToken(code);
+    public GoogleOAuthResponseDTO createToken(String type, String code) {
+        SocialLoginType socialLoginType = SocialLoginType.valueOf(type.toUpperCase());
+
+        SocialOauth socialOauth = socialOauthFactory.findSocialOauthType(socialLoginType);
+
+        return socialOauth.requestAccessToken(code);
     }
 
     // JWT 토큰에서 인증 정보 조회

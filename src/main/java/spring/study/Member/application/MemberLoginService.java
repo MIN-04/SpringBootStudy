@@ -2,15 +2,14 @@ package spring.study.Member.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.infraStructure.repository.MemberJPARepository;
-import spring.study.Member.infraStructure.rest.OAuthToken;
-import spring.study.common.auth.SocialOauth;
-import spring.study.common.auth.SocialOauthFactory;
+import spring.study.Member.infraStructure.rest.dto.GoogleOAuthResponseDTO;
+import spring.study.Member.domain.services.SocialOauth;
+import spring.study.Member.domain.services.SocialOauthFactory;
 import spring.study.common.auth.providers.JwtTokenProvider;
 import spring.study.common.auth.providers.SnsTokenProvider;
 import spring.study.common.enums.SocialLoginType;
@@ -47,15 +46,15 @@ public class MemberLoginService {
     /**
      * SNS 회원 로그인
      */
-    public OAuthToken loginSNS(String code) {
-        return snsTokenProvider.createToken(code);
+    public GoogleOAuthResponseDTO loginSNS(String socialLoginType, String code) {
+        return snsTokenProvider.createToken(socialLoginType, code);
     }
 
     /**
      * Social RedirectURL 불러오는 메서드
      */
     public String findSocialRedirectUrl(String type) {
-        SocialLoginType socialLoginType = SocialLoginType.valueOf(type);
+        SocialLoginType socialLoginType = SocialLoginType.valueOf(type.toUpperCase());
 
         SocialOauth socialOauth = socialOauthFactory.findSocialOauthType(socialLoginType);
         return socialOauth.getOauthRedirectUrl();
