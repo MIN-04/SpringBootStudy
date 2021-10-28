@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import spring.study.Member.domain.services.CustomUserDetailsService;
 import spring.study.Member.domain.services.SocialOauth;
 import spring.study.Member.domain.services.SocialOauthFactory;
-import spring.study.Member.infraStructure.rest.dto.GoogleOAuthResponseDTO;
+import spring.study.Member.infraStructure.rest.dto.SocialOauthResponseDTO;
 import spring.study.common.enums.SocialLoginType;
 
 import javax.annotation.PostConstruct;
@@ -41,7 +41,7 @@ public class SnsTokenProvider {
     }
 
     // SNS API 토큰 생성
-    public GoogleOAuthResponseDTO createToken(String type, String code) {
+    public SocialOauthResponseDTO createToken(String type, String code) {
         SocialLoginType socialLoginType = SocialLoginType.valueOf(type.toUpperCase());
 
         SocialOauth socialOauth = socialOauthFactory.findSocialOauthType(socialLoginType);

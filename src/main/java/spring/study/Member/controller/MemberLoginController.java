@@ -8,7 +8,7 @@ import spring.study.Member.application.MemberLoginService;
 import spring.study.Member.controller.dto.MemberRequestLoginDTO;
 import spring.study.Member.controller.dto.mapper.MemberRequestMapper;
 import spring.study.Member.domain.commands.MemberCommand;
-import spring.study.Member.infraStructure.rest.dto.GoogleOAuthResponseDTO;
+import spring.study.Member.infraStructure.rest.dto.SocialOauthResponseDTO;
 import spring.study.common.responses.ResponseMessage;
 
 import javax.servlet.http.HttpServletResponse;
@@ -88,7 +88,7 @@ public class MemberLoginController {
     public ResponseEntity<ResponseMessage> callBack(@PathVariable String socialLoginType, @RequestParam String code) {
         log.info("[MemberLoginController - callBack()] 소셜 로그인 API 서버로부터 받은 code :: socialLoginType = {}, code = {}", socialLoginType, code);
 
-        GoogleOAuthResponseDTO result = memberLoginService.loginSNS(socialLoginType, code);
+        SocialOauthResponseDTO result = memberLoginService.loginSNS(socialLoginType, code);
 
         //응답 메시지 만드는 메서드 호출
         ResponseMessage rm = setResponseMessage(result);

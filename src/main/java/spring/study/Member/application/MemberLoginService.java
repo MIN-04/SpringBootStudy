@@ -6,10 +6,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.commands.MemberCommand;
-import spring.study.Member.infraStructure.repository.MemberJPARepository;
-import spring.study.Member.infraStructure.rest.dto.GoogleOAuthResponseDTO;
 import spring.study.Member.domain.services.SocialOauth;
 import spring.study.Member.domain.services.SocialOauthFactory;
+import spring.study.Member.infraStructure.repository.MemberJPARepository;
+import spring.study.Member.infraStructure.rest.dto.SocialOauthResponseDTO;
 import spring.study.common.auth.providers.JwtTokenProvider;
 import spring.study.common.auth.providers.SnsTokenProvider;
 import spring.study.common.enums.SocialLoginType;
@@ -46,7 +46,7 @@ public class MemberLoginService {
     /**
      * SNS 회원 로그인
      */
-    public GoogleOAuthResponseDTO loginSNS(String socialLoginType, String code) {
+    public SocialOauthResponseDTO loginSNS(String socialLoginType, String code) {
         return snsTokenProvider.createToken(socialLoginType, code);
     }
 

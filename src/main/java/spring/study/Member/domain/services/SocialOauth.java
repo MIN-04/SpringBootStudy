@@ -1,6 +1,6 @@
 package spring.study.Member.domain.services;
 
-import spring.study.Member.infraStructure.rest.dto.GoogleOAuthResponseDTO;
+import spring.study.Member.infraStructure.rest.dto.SocialOauthResponseDTO;
 import spring.study.common.enums.SocialLoginType;
 
 public interface SocialOauth {
@@ -19,5 +19,5 @@ public interface SocialOauth {
     /**
      * Token 요청을 하는 메서드
      */
-    GoogleOAuthResponseDTO requestAccessToken(String code);
+    SocialOauthResponseDTO requestAccessToken(String code);
 }

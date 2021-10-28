@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @ToString
-public class GoogleOAuthResponseDTO {
+public class GoogleOAuthResponseDTO implements SocialOauthResponseDTO{
     private String access_token;
     private String expires_in;
     private String id_token;
