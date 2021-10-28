@@ -2,7 +2,6 @@ package spring.study.Member.domain.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import spring.study.Member.domain.services.SocialOauth;
 import spring.study.common.enums.SocialLoginType;
 
 import java.util.HashMap;
