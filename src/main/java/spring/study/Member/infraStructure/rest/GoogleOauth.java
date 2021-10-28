@@ -43,6 +43,11 @@ public class GoogleOauth implements SocialOauth {
         return builder.toUriString();
     }
 
+    /**
+     * 21.10.27 피드백 (10.28 수정 완료)
+     * requestAcessTocken의 return null 부분은 실패인데 Controller는 항상 성공코드를 넣는다.
+     * -> 실패 시 예외처리
+     */
     @Override
     public GoogleOAuthResponseDTO requestAccessToken(String code) {
         RestTemplate restTemplate = new RestTemplate();
