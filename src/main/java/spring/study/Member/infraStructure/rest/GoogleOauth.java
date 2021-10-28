@@ -9,10 +9,13 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import spring.study.Member.domain.services.SocialOauth;
 import spring.study.Member.infraStructure.rest.dto.GoogleOAuthResponseDTO;
+import spring.study.common.enums.ErrorCode;
 import spring.study.common.enums.SocialLoginType;
+import spring.study.common.exceptions.CustomException;
 
 import static spring.study.common.client_gitignore.ClientProfile.GOOGLE_SNS_CLINET_ID;
 import static spring.study.common.client_gitignore.ClientProfile.GOOGLE_SNS_CLINET_SECRET;
+import static spring.study.common.enums.ErrorCode.FAIL_LOGIN;
 import static spring.study.common.enums.SocialLoginType.GOOGLE;
 import static spring.study.common.paths.SocialOauthUrl.*;
 
@@ -59,8 +62,7 @@ public class GoogleOauth implements SocialOauth {
         if(responseEntity.getStatusCode() == HttpStatus.OK) {
             return responseEntity.getBody();
         }else {
-            // TODO : 예외 처리
-            return null;
+            throw new CustomException(FAIL_LOGIN);
         }
     }
 }

@@ -47,7 +47,7 @@ public class MemberExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * 회원 중복 예외
+     * 회원 CustomException
      * @return
      */
     @ExceptionHandler(CustomException.class)
