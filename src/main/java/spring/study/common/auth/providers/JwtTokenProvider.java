@@ -1,4 +1,4 @@
-package spring.study.common.security;
+package spring.study.common.auth.providers;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

@@ -1,4 +1,4 @@
-package spring.study.common.security;
+package spring.study.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +11,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import spring.study.Member.domain.services.CustomUserDetailsService;
 import spring.study.common.exceptions.CustomAuthenticationEntryPoint;
+import spring.study.common.auth.filters.JwtAuthenticationFilter;
+import spring.study.common.auth.providers.JwtTokenProvider;
+import spring.study.common.auth.filters.SnsAuthenticationFilter;
+import spring.study.common.auth.providers.SnsTokenProvider;
 
 @EnableWebSecurity(debug = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {

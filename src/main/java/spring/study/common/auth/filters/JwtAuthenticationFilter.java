@@ -1,9 +1,10 @@
-package spring.study.common.security;
+package spring.study.common.auth.filters;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
+import spring.study.common.auth.providers.JwtTokenProvider;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
