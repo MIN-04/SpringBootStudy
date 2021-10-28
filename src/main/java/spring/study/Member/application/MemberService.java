@@ -136,6 +136,8 @@ public class MemberService{
 
     /**
      * 이메일 또는 전화번호 중복된 멤버 찾아, 아이디가 다르면 Exception 발생 Function
+     * 21.10.27 피드백 (10.28 수정 완료)
+     * filter 사용하기
      * @param member
      */
     public void findDuplicatedMemberThrowExceptionFn(Member member) {
@@ -145,19 +147,18 @@ public class MemberService{
                         member.getMemberBasicInfo().getMobileNum());
         log.info("[modify - Service] memberList = {}", memberList);
 
-        //filter 사용하기
-        /*memberList.stream().filter(m -> !m.getId().equals(member.getId()))
+        memberList.stream().filter(m -> !m.getId().equals(member.getId()))
                 .findAny().ifPresent(m -> {
             throw new CustomException(DUPLICATED_MEMBER);
-        });*/
+        });
 
-        Long memberId = member.getId();
+        /*Long memberId = member.getId();
         if(!memberList.isEmpty()) {
             memberList.forEach(m -> {
                 if (!memberId.equals(m.getId())) {
                     throw new CustomException(DUPLICATED_MEMBER);
                 }
             });
-        }
+        }*/
     }
 }
