@@ -93,6 +93,7 @@ public class MemberLoginController {
                     add("response_type", "code");
                     add("client_id", GOOGLE_SNS_CLINET_ID);
                     add("redirect_uri", GOOGLE.getRedirectionUrl());
+                    add("access_type", "offline");
                 }};
 
                 UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(GOOGLE.getBaseUrl())
