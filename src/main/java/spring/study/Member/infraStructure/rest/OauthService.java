@@ -11,7 +11,8 @@ import org.springframework.web.client.RestTemplate;
 
 import static spring.study.common.client_gitignore.ClientProfile.GOOGLE_SNS_CLINET_ID;
 import static spring.study.common.client_gitignore.ClientProfile.GOOGLE_SNS_CLINET_SECRET;
-import static spring.study.common.enums.SocialLoginType.GOOGLE;
+import static spring.study.common.paths.SocialOauthUrl.GOOGLE_REDIRECT_URL;
+import static spring.study.common.paths.SocialOauthUrl.GOOGLE_REQUEST_URL;
 
 @Slf4j
 @Service
@@ -56,11 +57,11 @@ public class OauthService {
             add("code", code);
             add("client_id", GOOGLE_SNS_CLINET_ID);
             add("client_secret", GOOGLE_SNS_CLINET_SECRET);
-            add("redirect_uri", GOOGLE.getRedirectionUrl());
+            add("redirect_uri", GOOGLE_REDIRECT_URL);
             add("grant_type", "authorization_code");
         }};
 
-        ResponseEntity<OAuthToken> responseEntity = restTemplate.postForEntity(GOOGLE.getRequestUrl(), query, OAuthToken.class);
+        ResponseEntity<OAuthToken> responseEntity = restTemplate.postForEntity(GOOGLE_REQUEST_URL, query, OAuthToken.class);
         System.out.println("responseEntity.getBody() = " + responseEntity.getBody());
 
         if(responseEntity.getStatusCode() == HttpStatus.OK) {
