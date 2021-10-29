@@ -1,5 +1,7 @@
 package spring.study.Member.infraStructure.rest;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -12,14 +14,23 @@ import spring.study.Member.infraStructure.rest.dto.GoogleOAuthResponseDTO;
 import spring.study.common.enums.SocialLoginType;
 import spring.study.common.exceptions.CustomException;
 
-import static spring.study.common.client_gitignore.ClientProfile.GOOGLE_SNS_CLINET_ID;
-import static spring.study.common.client_gitignore.ClientProfile.GOOGLE_SNS_CLINET_SECRET;
 import static spring.study.common.enums.ErrorCode.FAIL_LOGIN;
 import static spring.study.common.enums.SocialLoginType.GOOGLE;
-import static spring.study.common.paths.SocialOauthUrl.*;
 
 @Component
+@Profile("sns_oauth")
 public class GoogleOauth implements SocialOauth {
+
+    @Value("${google.client_id}")
+    private String GOOGLE_SNS_CLINET_ID;
+    @Value("${google.client_secret}")
+    private String GOOGLE_SNS_CLINET_SECRET;
+    @Value("${google.base_url}")
+    private String GOOGLE_BASE_URL;
+    @Value("${google.redirect_url}")
+    private String GOOGLE_REDIRECT_URL;
+    @Value("${google.request_url}")
+    private String GOOGLE_REQUEST_URL;
 
     @Override
     public SocialLoginType getSocialOauthName() {
