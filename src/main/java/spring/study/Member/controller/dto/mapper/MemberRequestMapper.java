@@ -16,9 +16,7 @@ public class MemberRequestMapper {
     public MemberCommand toCommand(MemberRequestLoginDTO dto) {
         return MemberCommand.builder()
                 .email(dto.getEmail())
-                .basicInfo(MemberBasicInfo.builder()
-                        .password(dto.getPassword())
-                        .build())
+                .password(dto.getPassword())
                 .build();
     }
 
@@ -28,7 +26,6 @@ public class MemberRequestMapper {
     public MemberCommand toCommand(MemberRequestJoinDTO dto){
 
         MemberBasicInfo basicVo = new MemberBasicInfo(
-                dto.getPassword(),
                 dto.getName(),
                 dto.getMobileNum(),
                 dto.getGender(),
@@ -40,8 +37,9 @@ public class MemberRequestMapper {
         );
 
         return MemberCommand.builder()
-                .provider(dto.getProvider())
                 .email(dto.getEmail())
+                .password(dto.getPassword())
+                .provider(dto.getProvider())
                 .basicInfo(basicVo)
                 .addressInfo(addressVo)
                 .build();
@@ -53,7 +51,6 @@ public class MemberRequestMapper {
     public MemberCommand toCommand(MemberRequestModifyDTO dto) {
 
         MemberBasicInfo basicVo = new MemberBasicInfo(
-                dto.getPassword(),
                 dto.getName(),
                 dto.getMobileNum(),
                 dto.getGender(),
@@ -66,9 +63,10 @@ public class MemberRequestMapper {
 
         return MemberCommand.builder()
                 .id(dto.getId())
+                .email(dto.getEmail())
+                .password(dto.getPassword())
                 .roles(dto.getRoles())
                 .provider(dto.getProvider())
-                .email(dto.getEmail())
                 .basicInfo(basicVo)
                 .addressInfo(addressVo)
                 .build();
