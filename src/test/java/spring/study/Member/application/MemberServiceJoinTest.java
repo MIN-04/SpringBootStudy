@@ -49,7 +49,6 @@ class MemberServiceJoinTest {
     @BeforeAll
     static void setUp() {
         MemberBasicInfo memberBasicInfo = MemberBasicInfo.builder()
-                .password("abcd1!")
                 .name("홍길동")
                 .mobileNum("010-1111-1111")
                 .gender("F")
@@ -62,6 +61,7 @@ class MemberServiceJoinTest {
 
         memberCommand = MemberCommand.builder()
                 .email("hong@naver.com")
+                .password("abcd1!")
                 .basicInfo(memberBasicInfo)
                 .addressInfo(memberAddressInfo)
                 .build();
@@ -69,6 +69,7 @@ class MemberServiceJoinTest {
         member = Member.builder()
                 .id(1L)
                 .email("hong@naver.com")
+                .password("abcd1!")
                 .memberBasicInfo(memberBasicInfo)
                 .memberAddressInfo(memberAddressInfo)
                 .build();
