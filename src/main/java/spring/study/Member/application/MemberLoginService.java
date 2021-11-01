@@ -37,7 +37,7 @@ public class MemberLoginService {
         Member result = memberRepository.findByEmail(member.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
 
-        if (!passwordEncoder.matches(member.getMemberBasicInfo().getPassword(), result.getPassword()))
+        if (!passwordEncoder.matches(member.getPassword(), result.getPassword()))
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
 
         return jwtTokenProvider.createToken(member.getUsername(), member.getRoles());

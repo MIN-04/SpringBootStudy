@@ -28,6 +28,8 @@ public class Member implements UserDetails {
     //회원 ID는 email로 잘 하지 않는다. → ID를 따로 만들어주기 (ID를 generic 하게 해서 이것만 PK)
     private String email; //이메일 (회원 ID)
 
+    private String password; //패스워드
+
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>(); //회원 권한
@@ -49,7 +51,7 @@ public class Member implements UserDetails {
 
     @Override
     public String getPassword() {
-        return memberBasicInfo.getPassword();
+        return password;
     }
 
     @Override

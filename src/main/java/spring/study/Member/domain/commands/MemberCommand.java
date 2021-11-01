@@ -13,9 +13,10 @@ import java.util.List;
 @Builder
 public class MemberCommand {
     private final Long id; //id (회원 PKP
+    private final String email; //이메일 (회원 ID)
+    private final String password; //패스워드
     private final List<String> roles; //회원 권한
     private final String provider; //제공사
-    private final String email; //이메일 (회원 ID)
     private final MemberBasicInfo basicInfo;
     private final MemberAddressInfo addressInfo;
 }
