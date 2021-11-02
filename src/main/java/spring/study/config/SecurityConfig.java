@@ -10,24 +10,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import spring.study.Member.domain.services.CustomUserDetailsService;
-import spring.study.common.exceptions.CustomAuthenticationEntryPoint;
 import spring.study.common.auth.filters.JwtAuthenticationFilter;
 import spring.study.common.auth.providers.JwtTokenProvider;
-import spring.study.common.auth.filters.SnsAuthenticationFilter;
-import spring.study.common.auth.providers.SnsTokenProvider;
+import spring.study.common.exceptions.CustomAuthenticationEntryPoint;
 
 @EnableWebSecurity(debug = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final SnsTokenProvider snsTokenProvider;
 
     @Autowired
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtTokenProvider jwtTokenProvider, SnsTokenProvider snsTokenProvider) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtTokenProvider jwtTokenProvider) {
         this.customUserDetailsService = customUserDetailsService;
         this.jwtTokenProvider = jwtTokenProvider;
-        this.snsTokenProvider = snsTokenProvider;
     }
 
     @Bean
@@ -50,8 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new SnsAuthenticationFilter(snsTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
     }
 

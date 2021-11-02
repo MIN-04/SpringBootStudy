@@ -8,7 +8,6 @@ import spring.study.Member.application.MemberLoginService;
 import spring.study.Member.controller.dto.MemberRequestLoginDTO;
 import spring.study.Member.controller.dto.mapper.MemberRequestMapper;
 import spring.study.Member.domain.commands.MemberCommand;
-import spring.study.Member.infraStructure.rest.dto.SocialOauthResponseDTO;
 import spring.study.common.responses.ResponseMessage;
 
 import javax.servlet.http.HttpServletResponse;
@@ -78,17 +77,22 @@ public class MemberLoginController {
         //redirect URL : 로그인 하는 화면을 나타내는 거라고 생각하면 된다.
         String redirectionUrl = memberLoginService.findSocialRedirectUrl(socialLoginType);
 
+        //구글이 준 client_id=123인 서버의 redirect_uri와 동일한지 확인 후, 일치하면 scope를 넘겨줄 것인지 동의를 물어본다.
+        //동의하면 구글은 이에 해당하는 authorization_code를 발급한다.
+        //이 코드를 가진 url로 리다이렉트 된다.
+        //구글 로그인할 때 뜨는 이메일을 클릭할 경우
         response.sendRedirect(redirectionUrl);
     }
 
     /**
-     * 외부 SNS 서버에서 받아온 Code로 로그인 및 Token 발생 요청하는 메서드
+     * 외부 SNS 서버에서 받아온 Code로 구글에게 Access Token 요청하는 메서드
+     * 결과값은 ResponseEntity로 받는다. (이 body에 OAuth Access Token이 있다.)
      */
     @GetMapping(LOGIN_SOCIAL_CALLBACK)
     public ResponseEntity<ResponseMessage> callBack(@PathVariable String socialLoginType, @RequestParam String code) {
         log.info("[MemberLoginController - callBack()] 소셜 로그인 API 서버로부터 받은 code :: socialLoginType = {}, code = {}", socialLoginType, code);
 
-        SocialOauthResponseDTO result = memberLoginService.loginSNS(socialLoginType, code);
+        String result = memberLoginService.loginSNS(socialLoginType, code);
 
         //응답 메시지 만드는 메서드 호출
         ResponseMessage rm = setResponseMessage(result);
