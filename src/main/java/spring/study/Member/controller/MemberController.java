@@ -8,7 +8,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import spring.study.Member.application.MemberService;
 import spring.study.Member.controller.dto.MemberRequestJoinDTO;
-import spring.study.Member.controller.dto.MemberRequestLoginDTO;
 import spring.study.Member.controller.dto.MemberRequestModifyDTO;
 import spring.study.Member.controller.dto.mapper.MemberRequestMapper;
 import spring.study.Member.domain.aggregates.Member;
