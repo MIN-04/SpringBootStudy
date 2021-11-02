@@ -1,6 +1,5 @@
 package spring.study.Member.application;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,8 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import spring.study.Member.domain.aggregates.Member;
-import spring.study.Member.domain.valueObjects.MemberAddressInfo;
-import spring.study.Member.domain.valueObjects.MemberBasicInfo;
 import spring.study.Member.infraStructure.repository.MemberJPARepository;
 import spring.study.common.exceptions.CustomException;
 
