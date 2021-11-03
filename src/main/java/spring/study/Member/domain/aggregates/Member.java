@@ -38,7 +38,7 @@ public class Member implements UserDetails {
      * -> List를 DB엔 String 값으로 넣어주는 방법으로 해결 (따로 Table 생성 X)
      */
     @Convert(converter = RolesStringArrayConverter.class)
-    private final List<String> roles = new ArrayList<>();
+    private List<String> roles = new ArrayList<>();
 
     private String provider; //제공사 (Naver, Google 등)
 
