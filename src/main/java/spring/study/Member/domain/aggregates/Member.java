@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import spring.study.Member.domain.aggregates.converter.RolesStringArrayConverter;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
 
@@ -30,9 +31,14 @@ public class Member implements UserDetails {
 
     private String password; //패스워드
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Builder.Default
-    private List<String> roles = new ArrayList<>(); //회원 권한
+    /**
+     * 21.10.27 피드백
+     * Member에서 Member_roles 테이블은 의도하지 않았는데 생기는 문제점
+     * 원인 : @ElementCollection(fetch = FetchType.EAGER)
+     * -> List를 DB엔 String 값으로 넣어주는 방법으로 해결 (따로 Table 생성 X)
+     */
+    @Convert(converter = RolesStringArrayConverter.class)
+    private final List<String> roles = new ArrayList<>();
 
     private String provider; //제공사 (Naver, Google 등)
 
