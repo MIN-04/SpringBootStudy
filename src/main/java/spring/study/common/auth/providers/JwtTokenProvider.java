@@ -54,6 +54,35 @@ public class JwtTokenProvider {
         UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
+    /*public Authentication getAuthentication(String accessToken) {
+        Jws<Claims> jwsClaims = parseClaims(accessToken);
+        Claims claims = jwsClaims.getBody();
+
+        // 클레임에서 권한 정보 가져오기
+        Collection<? extends GrantedAuthority> authorities =
+                Arrays.stream(claims.get("roles").toString()
+                        .replaceAll("\\[","")
+                        .replaceAll("\\]","").split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+//
+        System.out.println("authorities = " + claims.get("roles", ArrayList.class));
+//
+//        UserDetails userDetails = new User(claims.getSubject(), "", claims.get("roles", ArrayList.class));
+
+        UserDetails userDetails = new User(claims.getSubject(), "", authorities);
+
+        *//*UserDetails userDetails = Member.builder()
+                .email(claims.getSubject())
+                .roles(claims.get("roles", ArrayList.class))
+                .build();*//*
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }*/
+
+    /*public Jws<Claims> parseClaims(String accessToken) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(accessToken);
+    }*/
+
 
     // 토큰에서 회원 정보 추출
     public String getUserPk(String token) {

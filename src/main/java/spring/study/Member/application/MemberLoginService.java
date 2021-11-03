@@ -42,7 +42,7 @@ public class MemberLoginService {
         if (!passwordEncoder.matches(member.getPassword(), result.getPassword()))
             throw new CustomException(WRONG_PASSWORD); //잘못된 비밀번호 입니다.
 
-        return jwtTokenProvider.createToken(member.getUsername(), member.getRoles());
+        return jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
     }
 
     /**

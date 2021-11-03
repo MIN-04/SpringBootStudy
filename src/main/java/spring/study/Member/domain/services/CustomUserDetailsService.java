@@ -28,17 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        Optional<Member> memberWrapper = memberRepository.findByEmail(username);
-//
-//        //유저 검증에 실패했다면 예외 발생
-//        if (memberWrapper.isEmpty()) throw new UsernameNotFoundException(username);
-//
-//        Member member = memberWrapper.get();
-
-        //SpringSecurity에서 제공하는 UserDetails를 구현한 User을 반환
-        //생성자의 각 매개변수는 순서대로 아이디, 비밀번호, 권한리스트
         return memberRepository.findByEmail(username)
                 .orElseThrow(() -> new CustomException(NOT_EXIST_MEMBER));
-//                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
     }
 }
