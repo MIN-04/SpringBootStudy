@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import spring.study.Member.application.MemberService;
@@ -26,7 +27,9 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.mockito.BDDMockito.willReturn;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,6 +40,7 @@ import static spring.study.common.paths.MemberUrl.MEMBER_ROOT_PATH;
 @WebMvcTest(MemberController.class)
 @ExtendWith(MockitoExtension.class)
 @DisplayName("[Controller] 회원 목록 조회 Test")
+@WithMockUser(roles = "MEMBER")
 class MemberControllerFindAllMockTest {
 
     @MockBean
@@ -93,7 +97,6 @@ class MemberControllerFindAllMockTest {
 
     @Test
     @DisplayName("회원 목록 조회 성공")
-    @WithMockUser(roles = "MEMBER")
     void successFindAll() throws Exception {
         //given
         int page = 0;
@@ -115,6 +118,22 @@ class MemberControllerFindAllMockTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(mapper.writeValueAsString(message)))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원 목록 조회 실패 - 권한이 없을 때")
+    @WithAnonymousUser
+    void unauthorized() throws Exception {
+        //given
+        int page = 0;
+        int pageCount = 10;
+
+        //when
+        //then
+        mockMvc.perform(get(MEMBER_ROOT_PATH + MEMBERS_PATH +"?page="+page+"&pageCount="+pageCount)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
                 .andDo(print());
     }
 

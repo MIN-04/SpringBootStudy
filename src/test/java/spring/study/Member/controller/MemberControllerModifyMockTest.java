@@ -1,5 +1,6 @@
 package spring.study.Member.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import spring.study.Member.application.MemberService;
@@ -44,6 +47,7 @@ import static spring.study.common.paths.MemberUrl.MEMBER_ROOT_PATH;
 @WebMvcTest(MemberController.class)
 @ExtendWith(MockitoExtension.class)
 @DisplayName("[Controller] 회원 수정 Test")
+@WithMockUser(roles = "MEMBER")
 class MemberControllerModifyMockTest {
 
     @MockBean
@@ -97,7 +101,6 @@ class MemberControllerModifyMockTest {
 
     @Test
     @DisplayName("회원 수정 성공")
-    @WithMockUser(roles = "MEMBER")
     void successModify() throws Exception {
 
         //given
@@ -122,8 +125,22 @@ class MemberControllerModifyMockTest {
     }
 
     @Test
+    @DisplayName("회원 수정 실패 - 권한이 없을 때")
+    @WithAnonymousUser
+    void unauthorized() throws Exception {
+        //given
+        //when
+        //then
+        mockMvc.perform(post(MEMBER_ROOT_PATH + MEMBERS_PATH)
+                .accept(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(dto))
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName("회원 수정 실패 - 수정할 회원이 없을 경우")
-    @WithMockUser(roles = "MEMBER")
     void notFoundMember() throws Exception {
         //given
         ResponseMessage message = ResponseMessage.builder()
@@ -146,7 +163,6 @@ class MemberControllerModifyMockTest {
 
     @Test
     @DisplayName("회원 수정 실패 - 이메일 또는 전화번호 중복일 때")
-    @WithMockUser(roles = "MEMBER")
     void failureDuplicated() throws Exception {
         //given
         //return response message
@@ -171,7 +187,6 @@ class MemberControllerModifyMockTest {
 
 
     @DisplayName("회원 수정 실패 - validation 통과 X")
-    @WithMockUser(roles = "MEMBER")
     @ParameterizedTest(name = "{index}: {6}")
     @MethodSource("invalidParameters")
     void failureValidation(Long id, String email, String password, String name, String mobile, ValidationMsgCode msgCode, String title) throws Exception {

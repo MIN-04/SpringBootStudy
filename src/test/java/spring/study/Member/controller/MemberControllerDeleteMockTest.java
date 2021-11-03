@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import spring.study.Member.application.MemberService;
@@ -23,13 +24,13 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static spring.study.common.enums.ErrorCode.NOT_EXIST_MEMBER;
 import static spring.study.common.enums.SuccessCode.SUCCESS_DELETE_MEMBER;
-import static spring.study.common.paths.MemberUrl.MEMBERS_DELETE;
-import static spring.study.common.paths.MemberUrl.MEMBER_ROOT_PATH;
+import static spring.study.common.paths.MemberUrl.*;
 
 @WebMvcTest(MemberController.class)
 @ExtendWith(MockitoExtension.class)
@@ -100,5 +101,18 @@ class MemberControllerDeleteMockTest {
         verify(memberService, times(1)).delete(1L);
     }
 
+    @Test
+    @DisplayName("회원 탈퇴 실패 - 권한 없음")
+    @WithAnonymousUser
+    void unauthorized() throws Exception {
+        //given
+        Long id = 1L;
 
+        //when
+        //then
+        mockMvc.perform(delete(MEMBER_ROOT_PATH + MEMBERS_DELETE, id)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+    }
 }
