@@ -12,16 +12,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import spring.study.Member.application.MemberService;
 import spring.study.Member.controller.dto.MemberRequestJoinDTO;
 import spring.study.Member.domain.aggregates.Member;
+import spring.study.Member.domain.services.CustomUserDetailsService;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
+import spring.study.common.auth.providers.JwtTokenProvider;
 import spring.study.common.enums.ValidationMsgCode;
 import spring.study.common.exceptions.CustomException;
 import spring.study.common.responses.ResponseMessage;
 
+import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -46,6 +50,12 @@ class MemberControllerJoinMockTest {
     @MockBean
     private MemberService memberService;
 
+    @MockBean
+    private CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -62,6 +72,7 @@ class MemberControllerJoinMockTest {
                 .id(1L)
                 .email("hong@naver.com")
                 .password("hong1!")
+                .roles(Collections.singletonList("ROLE_MEMBER"))
                 .memberBasicInfo(MemberBasicInfo.builder()
                         .name("홍길동")
                         .mobileNum("010-1111-2222")

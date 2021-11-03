@@ -12,14 +12,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import spring.study.Member.application.MemberService;
 import spring.study.Member.domain.aggregates.Member;
+import spring.study.Member.domain.services.CustomUserDetailsService;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
+import spring.study.common.auth.providers.JwtTokenProvider;
 import spring.study.common.responses.ResponseMessage;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.mockito.BDDMockito.willReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -38,6 +42,12 @@ class MemberControllerFindAllMockTest {
     @MockBean
     MemberService memberService;
 
+    @MockBean
+    private CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -52,6 +62,7 @@ class MemberControllerFindAllMockTest {
                 .id(1L)
                 .email("hong@naver.com")
                 .password("hong1!")
+                .roles(Collections.singletonList("ROLE_MEMBER"))
                 .memberBasicInfo(MemberBasicInfo.builder()
                         .name("홍길동")
                         .mobileNum("010-1111-2222")
@@ -67,6 +78,7 @@ class MemberControllerFindAllMockTest {
                 .id(2L)
                 .email("park@naver.com")
                 .password("park1!")
+                .roles(Collections.singletonList("ROLE_MEMBER"))
                 .memberBasicInfo(MemberBasicInfo.builder()
                         .name("박길동")
                         .mobileNum("010-1111-3333")
@@ -81,6 +93,7 @@ class MemberControllerFindAllMockTest {
 
     @Test
     @DisplayName("회원 목록 조회 성공")
+    @WithMockUser(roles = "MEMBER")
     void successFindAll() throws Exception {
         //given
         int page = 0;

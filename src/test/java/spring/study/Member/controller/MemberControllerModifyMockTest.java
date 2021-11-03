@@ -12,16 +12,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import spring.study.Member.application.MemberService;
 import spring.study.Member.controller.dto.MemberRequestModifyDTO;
 import spring.study.Member.domain.aggregates.Member;
+import spring.study.Member.domain.services.CustomUserDetailsService;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
+import spring.study.common.auth.providers.JwtTokenProvider;
 import spring.study.common.enums.ValidationMsgCode;
 import spring.study.common.exceptions.CustomException;
 import spring.study.common.responses.ResponseMessage;
 
+import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -45,6 +49,12 @@ class MemberControllerModifyMockTest {
     @MockBean
     private MemberService memberService;
 
+    @MockBean
+    private CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -61,6 +71,7 @@ class MemberControllerModifyMockTest {
                 .id(1L)
                 .email("hong@naver.com")
                 .password("hong1!")
+                .roles(Collections.singletonList("ROLE_MEMBER"))
                 .memberBasicInfo(MemberBasicInfo.builder()
                         .name("홍길동")
                         .mobileNum("010-1111-2222")
@@ -86,6 +97,7 @@ class MemberControllerModifyMockTest {
 
     @Test
     @DisplayName("회원 수정 성공")
+    @WithMockUser(roles = "MEMBER")
     void successModify() throws Exception {
 
         //given
@@ -111,6 +123,7 @@ class MemberControllerModifyMockTest {
 
     @Test
     @DisplayName("회원 수정 실패 - 수정할 회원이 없을 경우")
+    @WithMockUser(roles = "MEMBER")
     void notFoundMember() throws Exception {
         //given
         ResponseMessage message = ResponseMessage.builder()
@@ -133,6 +146,7 @@ class MemberControllerModifyMockTest {
 
     @Test
     @DisplayName("회원 수정 실패 - 이메일 또는 전화번호 중복일 때")
+    @WithMockUser(roles = "MEMBER")
     void failureDuplicated() throws Exception {
         //given
         //return response message
@@ -157,6 +171,7 @@ class MemberControllerModifyMockTest {
 
 
     @DisplayName("회원 수정 실패 - validation 통과 X")
+    @WithMockUser(roles = "MEMBER")
     @ParameterizedTest(name = "{index}: {6}")
     @MethodSource("invalidParameters")
     void failureValidation(Long id, String email, String password, String name, String mobile, ValidationMsgCode msgCode, String title) throws Exception {

@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import spring.study.Member.application.MemberService;
+import spring.study.Member.domain.services.CustomUserDetailsService;
+import spring.study.common.auth.providers.JwtTokenProvider;
 import spring.study.common.exceptions.CustomException;
 import spring.study.common.responses.ResponseMessage;
 
@@ -31,10 +34,17 @@ import static spring.study.common.paths.MemberUrl.MEMBER_ROOT_PATH;
 @WebMvcTest(MemberController.class)
 @ExtendWith(MockitoExtension.class)
 @DisplayName("[Controller] 회원 탈퇴 Test")
+@WithMockUser(roles = "MEMBER")
 class MemberControllerDeleteMockTest {
 
     @MockBean
     MemberService memberService;
+
+    @MockBean
+    private CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     private MockMvc mockMvc;
