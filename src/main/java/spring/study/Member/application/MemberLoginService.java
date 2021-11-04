@@ -69,7 +69,7 @@ public class MemberLoginService {
         ResponseEntity<GoogleUserInfo> userInfoResponse = socialOauthService.getUserInfo(socialLoginType, accessTokenDto);
 
         GoogleUserInfo googleUserInfo;
-        if(accessTokenResponse.getStatusCode() == HttpStatus.OK) {
+        if(userInfoResponse.getStatusCode() == HttpStatus.OK) {
             googleUserInfo = userInfoResponse.getBody();
         }else {
             throw new CustomException(FAIL_LOGIN);
