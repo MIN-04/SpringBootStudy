@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -34,6 +36,7 @@ class MemberJPARepositoryTest {
         member = Member.builder()
                 .email("hong@naver.com")
                 .password("abcd1!")
+                .roles(Collections.singletonList("ROLE_MEMBER"))
                 .memberBasicInfo(MemberBasicInfo.builder()
                         .name("홍길동")
                         .mobileNum("010-1111-1112")
@@ -130,6 +133,7 @@ class MemberJPARepositoryTest {
         Member member2 = Member.builder()
                 .email("park@naver.com")
                 .password("abcd1!")
+                .roles(Collections.singletonList("ROLE_MEMBER"))
                 .memberBasicInfo(MemberBasicInfo.builder()
                         .name("박땡땡")
                         .mobileNum("010-1111-1113")
@@ -145,6 +149,7 @@ class MemberJPARepositoryTest {
         Member member3 = Member.builder()
                 .email("choi@naver.com")
                 .password("abcd1!")
+                .roles(Collections.singletonList("ROLE_MEMBER"))
                 .memberBasicInfo(MemberBasicInfo.builder()
                         .name("최영영")
                         .mobileNum("010-1111-1114")
