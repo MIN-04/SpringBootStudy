@@ -151,7 +151,7 @@ class MemberSNSLoginServiceTest {
         String resultUrl = memberLoginService.findSocialRedirectUrl(socialLoginType);
 
         //then
-        assertThat(redirectUrl).isEqualTo(redirectUrl);
+        assertThat(resultUrl).isEqualTo(redirectUrl);
     }
 
 }
