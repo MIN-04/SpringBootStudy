@@ -1,7 +1,7 @@
 package spring.study.Member.application;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
 import spring.study.Member.domain.valueObjects.MemberBasicInfo;
@@ -30,15 +31,18 @@ class MemberServiceFindAllTest {
     @Mock
     MemberJPARepository memberRepository;
 
-    static Member member1;
-    static Member member2;
+    @Mock
+    PasswordEncoder passwordEncoder;
 
-    @BeforeAll
-    static void setUp() {
+    Member member1;
+    Member member2;
+
+    @BeforeEach
+    void setUp() {
         member1 = Member.builder()
                 .id(1L)
                 .email("hong@naver.com")
-                .password("hong1!")
+                .password(passwordEncoder.encode("hong1!"))
                 .memberBasicInfo(MemberBasicInfo.builder()
                         .name("홍길동")
                         .mobileNum("010-1111-2222")
@@ -53,7 +57,7 @@ class MemberServiceFindAllTest {
         member2 = Member.builder()
                 .id(2L)
                 .email("park@naver.com")
-                .password("park1!")
+                .password(passwordEncoder.encode("park1!"))
                 .memberBasicInfo(MemberBasicInfo.builder()
                         .name("박길동")
                         .mobileNum("010-1111-3333")

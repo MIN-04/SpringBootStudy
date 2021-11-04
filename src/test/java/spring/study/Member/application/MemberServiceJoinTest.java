@@ -1,6 +1,6 @@
 package spring.study.Member.application;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
@@ -40,14 +41,17 @@ class MemberServiceJoinTest {
     @Mock
     MemberJPARepository memberRepository;
 
+    @Mock
+    PasswordEncoder passwordEncoder;
+
     // MemberCommand
-    static MemberCommand memberCommand;
+    MemberCommand memberCommand;
 
     // Member
-    static Member member;
+    Member member;
 
-    @BeforeAll
-    static void setUp() {
+    @BeforeEach
+    void setUp() {
         MemberBasicInfo memberBasicInfo = MemberBasicInfo.builder()
                 .name("홍길동")
                 .mobileNum("010-1111-1111")
@@ -69,7 +73,7 @@ class MemberServiceJoinTest {
         member = Member.builder()
                 .id(1L)
                 .email("hong@naver.com")
-                .password("abcd1!")
+                .password(passwordEncoder.encode("abcd1!"))
                 .memberBasicInfo(memberBasicInfo)
                 .memberAddressInfo(memberAddressInfo)
                 .build();
@@ -101,6 +105,7 @@ class MemberServiceJoinTest {
 
         //when
         assertThat(result).usingRecursiveComparison().isEqualTo(member);
+//        assertNotEquals(memberCommand.getPassword(), encodedPassword);
     }
 
     /**

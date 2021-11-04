@@ -1,6 +1,6 @@
 package spring.study.Member.application;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.domain.valueObjects.MemberAddressInfo;
@@ -24,7 +25,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willReturn;
@@ -41,22 +43,25 @@ class MemberServiceModifyTest {
     @Mock
     MemberJPARepository memberRepository;
 
+    @Mock
+    PasswordEncoder passwordEncoder;
+
     //수정 전 member
-    static Member oldMember;
+    Member oldMember;
 
     //수정 할 command
-    static MemberCommand command;
+    MemberCommand command;
 
     //수정 후 정보
-    static Member updateMember;
+    Member updateMember;
 
-    @BeforeAll
-    static void setUp() {
+    @BeforeEach
+    void setUp() {
         //수정 전 member
         oldMember = Member.builder()
                 .id(1L)
                 .email("hong@naver.com")
-                .password("abcd1!")
+                .password(passwordEncoder.encode("abcd1!"))
                 .memberBasicInfo(MemberBasicInfo.builder()
                         .name("홍길동")
                         .mobileNum("010-1111-1111")
@@ -88,7 +93,7 @@ class MemberServiceModifyTest {
         updateMember = Member.builder()
                 .id(1L)
                 .email("hong1@naver.com")
-                .password("abcde1!")
+                .password(passwordEncoder.encode("abcde1!"))
                 .memberBasicInfo(MemberBasicInfo.builder()
                         .name("홍길동1")
                         .mobileNum("010-1111-2222")
