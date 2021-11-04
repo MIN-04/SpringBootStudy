@@ -12,10 +12,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import spring.study.Member.domain.services.CustomUserDetailsService;
 import spring.study.Product.application.ProductService;
 import spring.study.Product.controller.dto.ProductRequestDTO;
 import spring.study.Product.domain.aggregates.Product;
 import spring.study.Product.domain.valueObjects.ProductBasicInfo;
+import spring.study.common.auth.providers.JwtTokenProvider;
 import spring.study.common.responses.ResponseMessage;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -31,11 +33,16 @@ import static spring.study.common.paths.ProductUrl.PRODUCT_ROOT_PATH;
 @WebMvcTest(ProductController.class)
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Product [Controller] 상품 test")
-@WithMockUser("MEMBER")
 class ProductControllerSaveTest {
 
     @MockBean
     ProductService productService;
+
+    @MockBean
+    private CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     private MockMvc mockMvc;
