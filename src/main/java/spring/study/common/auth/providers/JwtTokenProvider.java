@@ -24,7 +24,7 @@ public class JwtTokenProvider {
 
     private long tokenValidMilisecond = 30 * 60 * 1000L; // 30분만 토큰 유효
 
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
     @Autowired
     public JwtTokenProvider(CustomUserDetailsService customUserDetailsService) {
