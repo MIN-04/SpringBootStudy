@@ -1,6 +1,5 @@
 package spring.study.Member.application;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import spring.study.Member.infraStructure.repository.MemberJPARepository;
 import spring.study.Member.infraStructure.rest.dto.GoogleOAuthResponseDTO;
 import spring.study.Member.infraStructure.rest.dto.GoogleUserInfo;
 import spring.study.common.auth.providers.JwtTokenProvider;
-import spring.study.common.enums.ErrorCode;
 import spring.study.common.exceptions.CustomException;
 
 import java.util.Collections;
