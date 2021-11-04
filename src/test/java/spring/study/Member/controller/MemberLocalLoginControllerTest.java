@@ -14,7 +14,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import spring.study.Member.application.MemberLoginService;
 import spring.study.Member.controller.dto.MemberRequestLoginDTO;
-import spring.study.Member.domain.commands.MemberCommand;
 import spring.study.Member.domain.services.CustomUserDetailsService;
 import spring.study.common.auth.providers.JwtTokenProvider;
 import spring.study.common.enums.ErrorCode;
@@ -89,11 +88,6 @@ class MemberLocalLoginControllerTest {
         MemberRequestLoginDTO loginDTO = MemberRequestLoginDTO.builder()
                 .email(email)
                 .password(password)
-                .build();
-
-        MemberCommand command = MemberCommand.builder()
-                .email("hong@ddd.com")
-                .password("hong1!")
                 .build();
 
         ResponseMessage rm = ResponseMessage.builder()
