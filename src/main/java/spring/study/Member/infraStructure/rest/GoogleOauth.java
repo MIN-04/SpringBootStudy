@@ -1,16 +1,17 @@
 package spring.study.Member.infraStructure.rest;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import spring.study.Member.domain.services.SocialOauth;
 import spring.study.Member.infraStructure.rest.dto.GoogleOAuthResponseDTO;
 import spring.study.Member.infraStructure.rest.dto.GoogleUserInfo;
@@ -57,9 +58,12 @@ public class GoogleOauth implements SocialOauth {
         return builder.toUriString();
     }
 
+    /**
+     * 21.10.27 피드백 (21.11.05 수정)
+     * RestTemplate -> WebFlux
+     */
     @Override
     public ResponseEntity<GoogleOAuthResponseDTO> requestAccessToken(String code) {
-        RestTemplate restTemplate = new RestTemplate();
 
         MultiValueMap<String, String> query = new LinkedMultiValueMap<>() {{
             add("code", code);
@@ -69,25 +73,32 @@ public class GoogleOauth implements SocialOauth {
             add("grant_type", "authorization_code");
         }};
 
-        // TODO : RestTemplate -> WebFlux 사용
-        //ResponseEntity<GoogleOAuthResponseDTO> responseEntity = restTemplate.postForEntity(GOOGLE_REQUEST_URL, query, GoogleOAuthResponseDTO.class);
+        return WebClient.create(GOOGLE_REQUEST_URL)
+                .post()
+                .uri(uriBuilder -> uriBuilder.queryParams(query).build())
+                .retrieve()
+                .toEntity(GoogleOAuthResponseDTO.class)
+                .block();
 
-        return restTemplate.postForEntity(GOOGLE_REQUEST_URL, query, GoogleOAuthResponseDTO.class);
+        //RestTemplate restTemplate = new RestTemplate();
+        //return restTemplate.postForEntity(GOOGLE_REQUEST_URL, query, GoogleOAuthResponseDTO.class);
 
     }
 
     /**
      * Google에 User Info 요청
+     * 21.10.27 피드백 (21.11.05 수정)
+     * RestTemplate -> WebFlux
      */
     @Override
     public ResponseEntity<GoogleUserInfo> requestUserInfo(GoogleOAuthResponseDTO dto) {
-        RestTemplate restTemplate = new RestTemplate();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer" + dto.getAccessToken());
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
-
-        return restTemplate.exchange(GOOGLE_REQUEST_USERINFO, HttpMethod.GET, request, GoogleUserInfo.class);
+        return WebClient.create(GOOGLE_REQUEST_USERINFO)
+                .get()
+                .headers(httpHeaders ->
+                        httpHeaders.add("Authorization", "Bearer" + dto.getAccessToken()))
+                .retrieve()
+                .toEntity(GoogleUserInfo.class)
+                .block();
     }
 }
