@@ -47,8 +47,8 @@ public class MemberLoginController {
      * 로컬 로그인
      */
     @PostMapping
-    public ResponseEntity<ResponseMessage> login(@RequestBody MemberRequestLoginDTO dto) {
-        log.info("[MemberLoginController - login()] dto = {}", dto);
+    public ResponseEntity<ResponseMessage> localLogin(@RequestBody MemberRequestLoginDTO dto) {
+        log.info("[MemberLoginController - localLogin()] dto = {}", dto);
 
         //MemberRequestJoinDTO -> Membercommand
         MemberCommand command = mapper.toCommand(dto);
@@ -65,7 +65,7 @@ public class MemberLoginController {
     }
 
     /**
-     * 사용자로부터 SNS 로그인 요청을 Social Login Type을 받아 처리
+     * 사용자로부터 SNS 로그인 요청인 Social Login Type을 받아 처리
      * 예를 들어 [구글 아이디로 로그인]을 클릭하면 이 컨트롤러로 요청 받는 것
     * @param socialLoginType (GOOGLE, NAVER, KAKAO)
      */
@@ -89,8 +89,8 @@ public class MemberLoginController {
      * 결과값은 ResponseEntity로 받는다. (이 body에 OAuth Access Token이 있다.)
      */
     @GetMapping(LOGIN_SOCIAL_CALLBACK)
-    public ResponseEntity<ResponseMessage> callBack(@PathVariable String socialLoginType, @RequestParam String code) {
-        log.info("[MemberLoginController - callBack()] 소셜 로그인 API 서버로부터 받은 code :: socialLoginType = {}, code = {}", socialLoginType, code);
+    public ResponseEntity<ResponseMessage> socialLogin(@PathVariable String socialLoginType, @RequestParam String code) {
+        log.info("[MemberLoginController - socialLogin()] 소셜 로그인 API 서버로부터 받은 code :: socialLoginType = {}, code = {}", socialLoginType, code);
 
         String result = memberLoginService.loginSNS(socialLoginType, code);
 
