@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import spring.study.Member.domain.aggregates.Member;
 import spring.study.Member.domain.services.SocialOauthService;
@@ -93,14 +92,10 @@ class MemberSNSLoginServiceTest {
     @DisplayName("SNS 회원 로그인 실패 - AccessToken 요청 실패")
     void failRequestAccessToken() {
         //given
-        ResponseEntity<GoogleOAuthResponseDTO> failResponse =
-                new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); //500error
-
-        given(socialOauthService.getAccessToken(anyString(), anyString())).willReturn(failResponse);
+        given(socialOauthService.getAccessToken(anyString(), anyString())).willThrow(new CustomException(FAIL_LOGIN));
 
         //when
         //then
-        assertThat(failResponse.getStatusCode()).isNotEqualTo(HttpStatus.OK);
         CustomException exception = assertThrows(CustomException.class,
                 () -> memberLoginService.loginSNS(socialLoginType, code));
         assertThat(exception.getErrorCode()).isEqualTo(FAIL_LOGIN);
@@ -110,15 +105,11 @@ class MemberSNSLoginServiceTest {
     @DisplayName("SNS 회원 로그인 실패 - 회원 정보 요청 실패")
     void failRequestUserInfo() {
         //given
-        ResponseEntity<GoogleUserInfo> failResponse =
-                new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); //500error
-
         given(socialOauthService.getAccessToken(anyString(), anyString())).willReturn(accessTokenResponse);
-        given(socialOauthService.getUserInfo(anyString(), any())).willReturn(failResponse);
+        given(socialOauthService.getUserInfo(anyString(), any())).willThrow(new CustomException(FAIL_LOGIN));
 
         //when
         //then
-        assertThat(failResponse.getStatusCode()).isNotEqualTo(HttpStatus.OK);
         CustomException exception = assertThrows(CustomException.class,
                 () -> memberLoginService.loginSNS(socialLoginType, code));
         assertThat(exception.getErrorCode()).isEqualTo(FAIL_LOGIN);

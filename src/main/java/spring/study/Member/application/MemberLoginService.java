@@ -2,7 +2,6 @@ package spring.study.Member.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,8 @@ import spring.study.Member.infraStructure.rest.dto.GoogleUserInfo;
 import spring.study.common.auth.providers.JwtTokenProvider;
 import spring.study.common.exceptions.CustomException;
 
-import static spring.study.common.enums.ErrorCode.*;
+import static spring.study.common.enums.ErrorCode.NOT_EXIST_MEMBER;
+import static spring.study.common.enums.ErrorCode.WRONG_PASSWORD;
 
 @Slf4j
 @Service
@@ -50,33 +50,19 @@ public class MemberLoginService {
      * 21.10.27 피드백 (11.04 수정 완료)
      * if의 else 부분은 실패인데 Controller는 항상 성공코드를 넣는다.
      * -> 실패 시 예외처리
+     * 21.11.05 피드백 (11.08 수정완료)
+     * 서비스 단의 로직이 길면 의심해볼만 하다. 분리하기 (예외처리)
+     * -> SocialOauthService로 로직 분리했다.
      */
     public String loginSNS(String socialLoginType, String code) {
 
         //AccessToken 요청
         ResponseEntity<GoogleOAuthResponseDTO> accessTokenResponse = socialOauthService.getAccessToken(socialLoginType, code);
 
-        GoogleOAuthResponseDTO accessTokenDto;
-
-        if(accessTokenResponse.getStatusCode() == HttpStatus.OK) {
-            accessTokenDto = accessTokenResponse.getBody();
-        }else {
-            throw new CustomException(FAIL_LOGIN);
-        }
-        log.info("[MemberLoginService - loginSNS()] Access Token = {}", accessTokenDto.getAccessToken());
-
         //AccessToken으로 회원 정보 요청
-        ResponseEntity<GoogleUserInfo> userInfoResponse = socialOauthService.getUserInfo(socialLoginType, accessTokenDto);
+        ResponseEntity<GoogleUserInfo> userInfoResponse = socialOauthService.getUserInfo(socialLoginType, accessTokenResponse.getBody());
 
-        GoogleUserInfo googleUserInfo;
-        if(userInfoResponse.getStatusCode() == HttpStatus.OK) {
-            googleUserInfo = userInfoResponse.getBody();
-        }else {
-            throw new CustomException(FAIL_LOGIN);
-        }
-        log.info("[MemberLoginService - loginSNS()] Google User Email = {}", googleUserInfo.getEmail());
-
-        Member member = memberRepository.findByEmail(googleUserInfo.getEmail())
+        Member member = memberRepository.findByEmail(userInfoResponse.getBody().getEmail())
                 .orElseThrow(() -> new CustomException(NOT_EXIST_MEMBER)); //회원이 존재하지 않습니다.
 
         return jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
